@@ -38,7 +38,7 @@ class Settings:
     API_DELAY_SECONDS = 2  # Delay quando atingir 80%
     
     # Configurações de Segurança
-    SECRET_KEY = os.getenv("SECRET_KEY", "change-this-in-production")
+    SECRET_KEY = os.getenv("SECRET_KEY")
     JWT_ALGORITHM = "HS256"
     JWT_EXPIRATION_HOURS = 24
     BCRYPT_ROUNDS = 12
