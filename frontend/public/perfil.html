@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APBIA - Meu Perfil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/cc533e21e1.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.location.href='projetos.html'" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-800">Meu Perfil</h1>
+                </div>
+                <button onclick="logout()" class="text-gray-600 hover:text-red-600">
+                    <i class="fas fa-sign-out-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Card de Perfil -->
+        <div class="bg-white rounded-lg shadow-sm p-8 mb-6">
+            <div class="flex items-center gap-6 mb-8">
+                <div id="profileAvatar" class="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                    U
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800" id="profileName">Nome do Usuário</h2>
+                    <p class="text-gray-600" id="profileEmail">email@exemplo.com</p>
+                    <span class="inline-block mt-2 px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium" id="profileTipo">
+                        Tipo de Usuário
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Email</h3>
+                    <p class="text-gray-800" id="infoEmail">-</p>
+                </div>
+                <div id="infoBPContainer" class="hidden">
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">BP (Prontuário)</h3>
+                    <p class="text-gray-800" id="infoBP">-</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Data de Cadastro</h3>
+                    <p class="text-gray-800" id="infoCadastro">-</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Última Atualização</h3>
+                    <p class="text-gray-800" id="infoAtualizacao">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alterar Senha -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                <i class="fas fa-key text-purple-600 mr-2"></i>
+                Alterar Senha
+            </h3>
+            
+            <div id="senhaMessage" class="hidden mb-4 p-4 rounded-lg"></div>
+
+            <form id="senhaForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Senha Atual</label>
+                    <input 
+                        type="password" 
+                        id="senhaAtual" 
+                        required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nova Senha</label>
+                    <input 
+                        type="password" 
+                        id="novaSenha" 
+                        required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                    <p class="text-xs text-gray-500 mt-1">
+                        Mínimo 8 caracteres, incluindo maiúsculas, minúsculas e números
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirmar Nova Senha</label>
+                    <input 
+                        type="password" 
+                        id="confirmarSenha" 
+                        required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    class="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold transition-colors"
+                >
+                    <i class="fas fa-check mr-2"></i>
+                    Alterar Senha
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!requireAuth()) return;
+            
+            carregarPerfil();
+            initSenhaForm();
+        });
+
+        /**
+         * Carrega dados do perfil
+         */
+        async function carregarPerfil() {
+            try {
+                const response = await api.meuPerfil();
+
+                if (response.success) {
+                    const user = response.data;
+                    
+                    // Avatar
+                    const avatar = document.getElementById('profileAvatar');
+                    avatar.textContent = getInitials(user.nome_completo);
+                    avatar.style.backgroundColor = getRandomColor();
+
+                    // Informações
+                    document.getElementById('profileName').textContent = user.nome_completo;
+                    document.getElementById('profileEmail').textContent = user.email;
+                    document.getElementById('profileTipo').textContent = user.tipo_usuario_nome.charAt(0).toUpperCase() + user.tipo_usuario_nome.slice(1);
+                    document.getElementById('infoEmail').textContent = user.email;
+                    document.getElementById('infoCadastro').textContent = formatDate(user.data_criacao);
+                    document.getElementById('infoAtualizacao').textContent = formatDate(user.data_atualizacao);
+
+                    // BP (se participante)
+                    if (user.bp) {
+                        document.getElementById('infoBPContainer').classList.remove('hidden');
+                        document.getElementById('infoBP').textContent = user.bp;
+                    }
+                } else {
+                    showToast('Erro ao carregar perfil', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                showToast('Erro ao carregar perfil', 'error');
+            }
+        }
+
+        /**
+         * Inicializa form de senha
+         */
+        function initSenhaForm() {
+            const form = document.getElementById('senhaForm');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const senhaAtual = document.getElementById('senhaAtual').value;
+                const novaSenha = document.getElementById('novaSenha').value;
+                const confirmarSenha = document.getElementById('confirmarSenha').value;
+
+                // Validações
+                if (novaSenha !== confirmarSenha) {
+                    mostrarMensagem('As senhas não coincidem', 'error');
+                    return;
+                }
+
+                const validacao = validatePassword(novaSenha);
+                if (!validacao.valid) {
+                    mostrarMensagem(validacao.message, 'error');
+                    return;
+                }
+
+                try {
+                    const response = await api.alterarSenha(senhaAtual, novaSenha);
+
+                    if (response.success) {
+                        mostrarMensagem('Senha alterada com sucesso!', 'success');
+                        form.reset();
+                    } else {
+                        mostrarMensagem(response.message || 'Erro ao alterar senha', 'error');
+                    }
+                } catch (error) {
+                    console.error('Erro ao alterar senha:', error);
+                    mostrarMensagem('Erro ao alterar senha', 'error');
+                }
+            });
+        }
+
+        /**
+         * Mostra mensagem no form de senha
+         */
+        function mostrarMensagem(texto, tipo) {
+            const messageDiv = document.getElementById('senhaMessage');
+            
+            const classes = {
+                success: 'bg-green-100 border border-green-400 text-green-700',
+                error: 'bg-red-100 border border-red-400 text-red-700'
+            };
+
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle'
+            };
+
+            messageDiv.className = `mb-4 p-4 rounded-lg ${classes[tipo]}`;
+            messageDiv.innerHTML = `<i class="fas ${icons[tipo]} mr-2"></i>${texto}`;
+            messageDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

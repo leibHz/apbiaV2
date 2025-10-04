@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APBIA - Meus Projetos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/cc533e21e1.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-robot text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">APBIA</h1>
+                        <p class="text-sm text-gray-500">Meus Projetos</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="window.location.href='perfil.html'" class="text-gray-600 hover:text-purple-600">
+                        <i class="fas fa-user-circle text-2xl"></i>
+                    </button>
+                    <div id="adminLink" class="hidden">
+                        <button onclick="window.location.href='admin.html'" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm">
+                            <i class="fas fa-cog mr-2"></i>
+                            Admin
+                        </button>
+                    </div>
+                    <button onclick="logout()" class="text-gray-600 hover:text-red-600">
+                        <i class="fas fa-sign-out-alt text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Bem-vindo -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">
+                Bem-vindo, <span id="welcomeName">Usuário</span>!
+            </h2>
+            <p class="text-gray-600">Gerencie seus projetos e converse com a IA</p>
+        </div>
+
+        <!-- Loading -->
+        <div id="loadingProjects" class="text-center py-12">
+            <i class="fas fa-spinner fa-spin text-4xl text-purple-600 mb-4"></i>
+            <p class="text-gray-600">Carregando projetos...</p>
+        </div>
+
+        <!-- Sem Projetos -->
+        <div id="noProjects" class="hidden text-center py-12">
+            <div class="inline-block p-6 bg-gray-100 rounded-full mb-4">
+                <i class="fas fa-folder-open text-5xl text-gray-400"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Nenhum projeto encontrado</h3>
+            <p class="text-gray-600 mb-6">Você ainda não está vinculado a nenhum projeto</p>
+            <p class="text-sm text-gray-500">Entre em contato com o administrador para ser adicionado a um projeto</p>
+        </div>
+
+        <!-- Lista de Projetos -->
+        <div id="projectsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Projetos serão carregados aqui via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal de Chats -->
+    <div id="chatsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-comments text-purple-600 mr-2"></i>
+                        Conversas do Projeto
+                    </h3>
+                    <button onclick="fecharModalChats()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <p class="text-sm text-gray-600 mt-2" id="modalProjectName"></p>
+            </div>
+            <div class="p-6 overflow-y-auto" style="max-height: calc(80vh - 180px);">
+                <div id="chatsList" class="space-y-3">
+                    <!-- Chats serão carregados aqui -->
+                </div>
+            </div>
+            <div class="p-6 border-t bg-gray-50">
+                <button onclick="criarNovoChat()" class="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold">
+                    <i class="fas fa-plus mr-2"></i>
+                    Criar Nova Conversa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        // Projeto atual
+        let currentProjectId = null;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!requireAuth()) return;
+            
+            updateUserInfo();
+            loadProjects();
+        });
+
+        /**
+         * Atualiza informações do usuário
+         */
+        function updateUserInfo() {
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('welcomeName').textContent = user.nome_completo.split(' ')[0];
+                
+                // Mostra link admin se for admin
+                if (isAdmin()) {
+                    document.getElementById('adminLink').classList.remove('hidden');
+                }
+            }
+        }
+
+        /**
+         * Carrega projetos do usuário
+         */
+        async function loadProjects() {
+            try {
+                const response = await api.listarProjetos();
+
+                document.getElementById('loadingProjects').classList.add('hidden');
+
+                if (response.success && response.data.length > 0) {
+                    displayProjects(response.data);
+                } else {
+                    document.getElementById('noProjects').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar projetos:', error);
+                document.getElementById('loadingProjects').classList.add('hidden');
+                showToast('Erro ao carregar projetos', 'error');
+            }
+        }
+
+        /**
+         * Exibe projetos na tela
+         */
+        function displayProjects(projects) {
+            const container = document.getElementById('projectsList');
+            container.innerHTML = '';
+
+            projects.forEach(project => {
+                const card = createProjectCard(project);
+                container.appendChild(card);
+            });
+        }
+
+        /**
+         * Cria card de projeto
+         */
+        function createProjectCard(project) {
+            const div = document.createElement('div');
+            div.className = 'bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-6';
+
+            const colors = ['purple', 'blue', 'green', 'yellow', 'red', 'indigo'];
+            const color = colors[project.id % colors.length];
+
+            div.innerHTML = `
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 bg-${color}-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-flask text-${color}-600 text-xl"></i>
+                    </div>
+                    <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                        ${project.ano_edicao}
+                    </span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2 line-clamp-2">${project.nome}</h3>
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">${project.descricao || 'Sem descrição'}</p>
+                <div class="flex items-center gap-2 mb-4 text-xs text-gray-500">
+                    <i class="fas fa-tag"></i>
+                    <span>${project.area_projeto}</span>
+                </div>
+                ${project.participantes ? `
+                    <div class="flex items-center gap-2 mb-4 text-xs text-gray-500">
+                        <i class="fas fa-users"></i>
+                        <span>${project.participantes.length} participante(s)</span>
+                    </div>
+                ` : ''}
+                <button 
+                    onclick="abrirChats(${project.id}, '${project.nome}')"
+                    class="w-full px-4 py-2 bg-${color}-600 text-white rounded-lg hover:bg-${color}-700 font-medium transition-colors"
+                >
+                    <i class="fas fa-comments mr-2"></i>
+                    Ver Conversas
+                </button>
+            `;
+
+            return div;
+        }
+
+        /**
+         * Abre modal de chats
+         */
+        async function abrirChats(projectId, projectName) {
+            currentProjectId = projectId;
+            document.getElementById('modalProjectName').textContent = projectName;
+            document.getElementById('chatsModal').classList.remove('hidden');
+            
+            await loadChats(projectId);
+        }
+
+        /**
+         * Fecha modal de chats
+         */
+        function fecharModalChats() {
+            document.getElementById('chatsModal').classList.add('hidden');
+            currentProjectId = null;
+        }
+
+        /**
+         * Carrega chats do projeto
+         */
+        async function loadChats(projectId) {
+            const container = document.getElementById('chatsList');
+            container.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin text-purple-600"></i></div>';
+
+            try {
+                const response = await api.listarChatsProjeto(projectId);
+
+                if (response.success && response.data.length > 0) {
+                    displayChats(response.data);
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-comments text-4xl mb-2"></i>
+                            <p>Nenhuma conversa ainda</p>
+                            <p class="text-sm">Crie uma nova conversa para começar!</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar chats:', error);
+                container.innerHTML = '<div class="text-center py-4 text-red-600">Erro ao carregar conversas</div>';
+            }
+        }
+
+        /**
+         * Exibe lista de chats
+         */
+        function displayChats(chats) {
+            const container = document.getElementById('chatsList');
+            container.innerHTML = '';
+
+            chats.forEach(chat => {
+                const div = document.createElement('div');
+                div.className = 'border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors';
+                div.onclick = () => window.location.href = `chat.html?id=${chat.id}`;
+
+                div.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800 mb-1">${chat.titulo}</h4>
+                            <p class="text-sm text-gray-500">
+                                <i class="far fa-comment mr-1"></i>
+                                ${chat.total_mensagens || 0} mensagens
+                            </p>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            ${formatDateShort(chat.data_criacao)}
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        /**
+         * Cria novo chat
+         */
+        async function criarNovoChat() {
+            if (!currentProjectId) return;
+
+            const titulo = prompt('Digite um título para a conversa:');
+            if (!titulo) return;
+
+            try {
+                const response = await api.criarChat(currentProjectId, 'gemini', titulo);
+
+                if (response.success) {
+                    showToast('Conversa criada com sucesso!', 'success');
+                    window.location.href = `chat.html?id=${response.data.id}`;
+                } else {
+                    showToast(response.message || 'Erro ao criar conversa', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao criar chat:', error);
+                showToast('Erro ao criar conversa', 'error');
+            }
+        }
+
+        // Exporta funções globais
+        window.abrirChats = abrirChats;
+        window.fecharModalChats = fecharModalChats;
+        window.criarNovoChat = criarNovoChat;
+    </script>
+</body>
+</html>

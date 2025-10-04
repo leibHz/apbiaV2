@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APBIA - Painel Administrativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/cc533e21e1.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.location.href='projetos.html'" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-cog text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Painel Administrativo</h1>
+                        <p class="text-sm text-gray-500">Gerenciamento do Sistema</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="text-gray-600 hover:text-red-600">
+                    <i class="fas fa-sign-out-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Cards de Status -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-600 text-sm font-medium">Usuários Totais</h3>
+                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="totalUsuarios">-</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-600 text-sm font-medium">Projetos Ativos</h3>
+                    <i class="fas fa-flask text-green-600 text-xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="totalProjetos">-</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-600 text-sm font-medium">Conversas</h3>
+                    <i class="fas fa-comments text-purple-600 text-xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="totalChats">-</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-600 text-sm font-medium">Uso da API</h3>
+                    <i class="fas fa-chart-line text-yellow-600 text-xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="usoAPI">-</p>
+            </div>
+        </div>
+
+        <!-- Controles do Sistema -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-sliders-h text-red-600 mr-2"></i>
+                Controles do Sistema
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="toggleSistema()" id="toggleBtn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition-colors">
+                    <i class="fas fa-power-off mr-2"></i>
+                    Sistema Ativo
+                </button>
+                <button onclick="resetarContador()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Resetar Contador
+                </button>
+                <button onclick="recarregarRelatorio()" class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold transition-colors">
+                    <i class="fas fa-redo mr-2"></i>
+                    Atualizar Dados
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="border-b">
+                <nav class="flex">
+                    <button onclick="changeTab('usuarios')" class="tab-btn active px-6 py-4 font-medium border-b-2 border-purple-600 text-purple-600">
+                        <i class="fas fa-users mr-2"></i>
+                        Usuários
+                    </button>
+                    <button onclick="changeTab('projetos')" class="tab-btn px-6 py-4 font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-flask mr-2"></i>
+                        Projetos
+                    </button>
+                    <button onclick="changeTab('api')" class="tab-btn px-6 py-4 font-medium border-b-2 border-transparent text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Status API
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-6">
+                <!-- Tab Usuários -->
+                <div id="tab-usuarios" class="tab-content">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">Gerenciar Usuários</h3>
+                        <button onclick="abrirModalCadastro()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                            <i class="fas fa-plus mr-2"></i>
+                            Novo Usuário
+                        </button>
+                    </div>
+                    <div id="usuariosList" class="space-y-3">
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                            <p>Carregando usuários...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Projetos -->
+                <div id="tab-projetos" class="tab-content hidden">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Projetos Cadastrados</h3>
+                    <div id="projetosList" class="space-y-3">
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                            <p>Carregando projetos...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab API -->
+                <div id="tab-api" class="tab-content hidden">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Status da API</h3>
+                    <div id="apiStatus" class="space-y-4">
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                            <p>Carregando status...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cadastro -->
+    <div id="cadastroModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Cadastrar Novo Usuário</h3>
+            <form id="cadastroForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nome Completo</label>
+                    <input type="text" id="cadNome" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="cadEmail" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Senha</label>
+                    <input type="password" id="cadSenha" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Usuário</label>
+                    <select id="cadTipo" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                        <option value="participante">Participante</option>
+                        <option value="orientador">Orientador</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <div id="bpField">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">BP (apenas para participante)</label>
+                    <input type="text" id="cadBP" placeholder="BRG12345678" maxlength="11" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="fecharModalCadastro()" class="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                        Cadastrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+</html>
