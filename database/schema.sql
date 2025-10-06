@@ -78,3 +78,9 @@ CREATE TABLE public.usuarios (
   CONSTRAINT usuarios_pkey PRIMARY KEY (id),
   CONSTRAINT usuarios_tipo_usuario_id_fkey FOREIGN KEY (tipo_usuario_id) REFERENCES public.tipos_usuario(id)
 );
+CREATE TABLE public.sistema_config (
+  chave character varying NOT NULL,
+  valor text,
+  data_atualizacao timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT sistema_config_pkey PRIMARY KEY (chave)
+);

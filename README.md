@@ -72,7 +72,6 @@ cp .env.example .env
 5. **Configure o banco de dados:**
 - Acesse o Supabase
 - Execute o script `database/schema.sql`
-- Execute o script `database/seeds.sql` (dados iniciais)
 
 6. **Crie buckets no Supabase Storage:**
 - Bucket: `bragantec-files` (público)

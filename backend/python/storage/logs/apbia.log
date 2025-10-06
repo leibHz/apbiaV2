@@ -1,0 +1,48 @@
+2025-10-04 19:41:25 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-04 19:41:27 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-04 19:41:28 - APBIA - WARNING - ⚠️  Não foi possível carregar estado: {'message': "Could not find the table 'public.sistema_config' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2025-10-04 19:41:28 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-04 19:41:28 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-04 19:41:28 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-04 19:41:31 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-04 19:41:32 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-04 19:41:32 - APBIA - WARNING - ⚠️  Não foi possível carregar estado: {'message': "Could not find the table 'public.sistema_config' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2025-10-04 19:41:32 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-04 19:41:32 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-04 19:41:32 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-04 19:48:21 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-04 19:48:22 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-04 19:48:23 - APBIA - WARNING - ⚠️  Não foi possível carregar estado: {'message': "Could not find the table 'public.sistema_config' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2025-10-04 19:48:23 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-04 19:48:23 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-04 19:48:23 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-04 19:48:25 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-04 19:48:26 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-04 19:48:27 - APBIA - WARNING - ⚠️  Não foi possível carregar estado: {'message': "Could not find the table 'public.sistema_config' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2025-10-04 19:48:27 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-04 19:48:27 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-04 19:48:27 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-04 19:56:06 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-04 19:56:07 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-04 19:56:08 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-04 19:56:08 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-04 19:56:08 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-04 19:56:10 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-04 19:56:11 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-04 19:56:11 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-04 19:56:11 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-04 19:56:11 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-04 20:22:10 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-04 20:22:16 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-05 21:14:20 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 21:14:21 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 21:14:23 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 21:14:23 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 21:14:23 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 21:14:23 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 21:14:25 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 21:14:26 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 21:14:27 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 21:14:27 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 21:14:27 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 21:14:27 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
