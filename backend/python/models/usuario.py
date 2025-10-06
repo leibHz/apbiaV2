@@ -4,6 +4,7 @@ Model de Usuário
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
+from utils.helpers import helpers
 
 
 @dataclass
@@ -52,8 +53,8 @@ class Usuario:
             senha_hash=data.get("senha_hash"),
             tipo_usuario_id=data.get("tipo_usuario_id", 0),
             bp=data.get("bp"),
-            data_criacao=data.get("data_criacao"),
-            data_atualizacao=data.get("data_atualizacao"),
+            data_criacao=helpers.parse_datetime(data.get("data_criacao")),
+            data_atualizacao=helpers.parse_datetime(data.get("data_atualizacao")),
             tipo_usuario_nome=data.get("tipo_usuario_nome")
         )
     

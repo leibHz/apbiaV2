@@ -46,3 +46,81 @@
 2025-10-05 21:14:27 - APBIA - INFO - ✅ Conexão com banco de dados OK
 2025-10-05 21:14:27 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
 2025-10-05 21:14:27 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 21:25:10 - APBIA - ERROR - ❌ Erro ao conectar com Supabase: 'Settings' object has no attribute 'SUPABASE_ANON_KEY'
+2025-10-05 21:28:13 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 21:28:14 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 21:28:16 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 21:28:16 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 21:28:16 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 21:28:16 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 21:28:18 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 21:28:19 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 21:28:20 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 21:28:20 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 21:28:20 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 21:28:20 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 21:30:44 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-05 21:30:59 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-05 21:31:01 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-05 21:31:02 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-05 21:31:03 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-05 21:31:08 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-05 21:31:12 - APBIA - WARNING - Tentativa de login falhou para: admin@apbia.com
+2025-10-05 21:41:04 - APBIA - ERROR - ❌ Erro ao realizar login: 'str' object has no attribute 'isoformat'
+2025-10-05 21:41:09 - APBIA - ERROR - ❌ Erro ao realizar login: 'str' object has no attribute 'isoformat'
+2025-10-05 21:41:21 - APBIA - ERROR - ❌ Erro ao realizar login: 'str' object has no attribute 'isoformat'
+2025-10-05 21:57:56 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 21:57:57 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 21:57:58 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 21:57:58 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 21:57:58 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 21:57:58 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 21:58:00 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 21:58:01 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 21:58:02 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 21:58:02 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 21:58:02 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 21:58:02 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 21:58:46 - APBIA - INFO - ✅ Login bem-sucedido: admin@apbia.com
+2025-10-05 22:14:05 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 22:14:06 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 22:14:07 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 22:14:08 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 22:14:08 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 22:14:08 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 22:14:10 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 22:14:11 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 22:14:11 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 22:14:11 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 22:14:11 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 22:14:11 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 22:14:18 - APBIA - INFO - ✅ Login bem-sucedido: admin@apbia.com
+2025-10-05 22:17:29 - APBIA - INFO - ✅ Registro atualizado em usuarios: ID 27
+2025-10-05 22:17:29 - APBIA - INFO - ✅ Senha alterada para usuário ID: 27
+2025-10-05 22:20:33 - APBIA - INFO - ✅ Registro criado em usuarios: ID 30
+2025-10-05 22:20:33 - APBIA - INFO - ✅ Usuário cadastrado: biel508ferreiradasilva1105@gmail.com
+2025-10-05 22:24:56 - APBIA - INFO - ✅ Registro criado em usuarios: ID 31
+2025-10-05 22:24:56 - APBIA - INFO - ✅ Usuário cadastrado: luciano@gmail.com
+2025-10-05 22:26:30 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'invalid input syntax for type bigint: ""', 'code': '22P02', 'hint': None, 'details': None}
+2025-10-05 22:26:30 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'Could not find the function public.get_orientadores_projeto(p_projeto_id) in the schema cache', 'code': 'PGRST202', 'hint': None, 'details': 'Searched for the function public.get_orientadores_projeto with parameter p_projeto_id or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.'}
+2025-10-05 22:26:31 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'invalid input syntax for type bigint: ""', 'code': '22P02', 'hint': None, 'details': None}
+2025-10-05 22:26:31 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'Could not find the function public.get_orientadores_projeto(p_projeto_id) in the schema cache', 'code': 'PGRST202', 'hint': None, 'details': 'Searched for the function public.get_orientadores_projeto with parameter p_projeto_id or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.'}
+2025-10-05 22:31:45 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'invalid input syntax for type bigint: ""', 'code': '22P02', 'hint': None, 'details': None}
+2025-10-05 22:31:45 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'Could not find the function public.get_orientadores_projeto(p_projeto_id) in the schema cache', 'code': 'PGRST202', 'hint': None, 'details': 'Searched for the function public.get_orientadores_projeto with parameter p_projeto_id or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.'}
+2025-10-05 22:31:46 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'invalid input syntax for type bigint: ""', 'code': '22P02', 'hint': None, 'details': None}
+2025-10-05 22:31:46 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'Could not find the function public.get_orientadores_projeto(p_projeto_id) in the schema cache', 'code': 'PGRST202', 'hint': None, 'details': 'Searched for the function public.get_orientadores_projeto with parameter p_projeto_id or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.'}
+2025-10-05 22:32:07 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 22:32:08 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 22:32:08 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 22:32:08 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 22:32:08 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 22:32:08 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 22:32:10 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-05 22:32:11 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-05 22:32:12 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-05 22:32:12 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-05 22:32:12 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-05 22:32:12 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-05 22:32:55 - APBIA - INFO - ✅ Login bem-sucedido: biel508ferreiradasilva1105@gmail.com
+2025-10-05 22:32:57 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'invalid input syntax for type bigint: ""', 'code': '22P02', 'hint': None, 'details': None}
+2025-10-05 22:32:57 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'Could not find the function public.get_orientadores_projeto(p_projeto_id) in the schema cache', 'code': 'PGRST202', 'hint': None, 'details': 'Searched for the function public.get_orientadores_projeto with parameter p_projeto_id or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.'}

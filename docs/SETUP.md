@@ -320,7 +320,7 @@ Deve retornar:
 
 ### Passo 6: Criar Primeiro Projeto
 
-Via SQL Editor do Supabase:
+Via SQL Editor do Supabase (manualmente por enquanto):
 ```sql
 INSERT INTO projetos (nome, descricao, area_projeto, ano_edicao)
 VALUES (

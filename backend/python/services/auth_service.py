@@ -42,8 +42,11 @@ class AuthService:
                 logger.warning(f"Tentativa de login falhou para: {email}")
                 return False, None, "Senha incorreta"
             
-            # Verifica BP se fornecido (para participantes)
-            if bp:
+            # Verifica BP se o usuário for participante
+            if usuario.is_participante():
+                if not bp:
+                    return False, None, "BP (prontuário) é obrigatório para participantes"
+                
                 if not validators.validate_bp(bp):
                     return False, None, "BP inválido"
                 

@@ -8,6 +8,7 @@ from config.settings import settings
 from config.database import db
 from controllers.chat_controller import chat_controller
 from controllers.gemini_controller import gemini_controller
+from controllers.admin_controller import admin_controller
 from services.auth_service import auth_service
 from services.api_monitor_service import api_monitor
 from dao.usuario_dao import UsuarioDAO
@@ -338,16 +339,18 @@ def admin_cadastrar_usuario():
 def admin_sistema_status():
     """Status completo do sistema"""
     try:
-        relatorio = api_monitor.obter_relatorio()
-        estatisticas = api_monitor.obter_estatisticas_periodo()
+        # Chama o método do controller que retorna o relatório completo
+        resultado = admin_controller.obter_relatorio_completo()
         
-        return jsonify(helpers.create_response(True, "Status obtido", data={
-            'relatorio': relatorio,
-            'estatisticas': estatisticas,
-            'database_ok': db.health_check()
-        })), 200
+        # A resposta já vem formatada do controller
+        if resultado['success']:
+            return jsonify(resultado), 200
+        else:
+            return jsonify(resultado), 500
+            
     except Exception as e:
-        return jsonify(helpers.create_response(False, "Erro ao obter status", error=str(e))), 500
+        logger.error_trace(e, "admin_sistema_status")
+        return jsonify(helpers.create_response(False, "Erro ao obter status do sistema", error=str(e))), 500
 
 
 @app.route('/api/admin/sistema/toggle', methods=['POST'])
@@ -439,3 +442,4 @@ if __name__ == '__main__':
     except Exception as e:
         logger.critical(f"❌ Falha ao iniciar servidor: {e}")
         raise
+

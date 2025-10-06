@@ -82,6 +82,8 @@ class Helpers:
     @staticmethod
     def parse_datetime(dt_str: str) -> Optional[datetime]:
         """Converte string para datetime"""
+        if not dt_str or not isinstance(dt_str, str):
+            return None
         try:
             return datetime.fromisoformat(dt_str.replace('Z', '+00:00'))
         except:

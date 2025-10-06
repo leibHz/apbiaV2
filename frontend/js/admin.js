@@ -58,9 +58,9 @@ async function carregarRelatorio() {
             const data = response.data;
             
             // Atualiza cards
-            document.getElementById('totalUsuarios').textContent = data.usuarios.total || 0;
-            document.getElementById('totalProjetos').textContent = data.projetos.total || 0;
-            document.getElementById('totalChats').textContent = data.chats.total || 0;
+            document.getElementById('totalUsuarios').textContent = data.usuarios?.total || 0;
+            document.getElementById('totalProjetos').textContent = data.projetos?.total || 0;
+            document.getElementById('totalChats').textContent = data.chats?.total || 0;
             
             // Uso da API
             const usoAPI = data.api?.status?.uso_percentual || 0;
@@ -70,8 +70,8 @@ async function carregarRelatorio() {
             sistemaAtivo = data.sistema?.ativo !== false;
             atualizarBotaoToggle();
 
-            // Carrega dados das tabs
-            await carregarUsuarios();
+            // Carrega dados das tabs, passando os dados para evitar nova chamada
+            await carregarUsuarios(data.usuarios);
             await carregarProjetos();
             await carregarStatusAPI();
         }
@@ -84,16 +84,24 @@ async function carregarRelatorio() {
 /**
  * Carrega lista de usuários
  */
-async function carregarUsuarios() {
+async function carregarUsuarios(usuariosData = null) {
     const container = document.getElementById('usuariosList');
     container.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin text-purple-600"></i></div>';
 
     try {
-        const response = await api.statusSistema();
+        let usuarios = usuariosData;
+
+        // Se os dados não foram passados, busca na API como fallback
+        if (!usuarios) {
+            const response = await api.statusSistema();
+            if (response.success) {
+                usuarios = response.data.usuarios;
+            } else {
+                throw new Error(response.message || "Não foi possível buscar dados dos usuários");
+            }
+        }
         
-        if (response.success) {
-            const usuarios = response.data.usuarios;
-            
+        if (usuarios && usuarios.por_tipo) {
             let html = '';
             
             // Por tipo
@@ -126,6 +134,8 @@ async function carregarUsuarios() {
             });
 
             container.innerHTML = html || '<p class="text-center py-4 text-gray-500">Nenhum usuário cadastrado</p>';
+        } else {
+            container.innerHTML = '<p class="text-center py-4 text-gray-500">Nenhum usuário cadastrado</p>';
         }
     } catch (error) {
         console.error('Erro ao carregar usuários:', error);
