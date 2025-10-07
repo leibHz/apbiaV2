@@ -31,8 +31,8 @@ class Usuario:
             "email": self.email,
             "tipo_usuario_id": self.tipo_usuario_id,
             "bp": self.bp,
-            "data_criacao": self.data_criacao.isoformat() if self.data_criacao else None,
-            "data_atualizacao": self.data_atualizacao.isoformat() if self.data_atualizacao else None
+            "data_criacao": self._format_datetime(self.data_criacao),
+            "data_atualizacao": self._format_datetime(self.data_atualizacao)
         }
         
         if self.tipo_usuario_nome:
@@ -42,6 +42,21 @@ class Usuario:
             data["senha_hash"] = self.senha_hash
         
         return data
+    
+    def _format_datetime(self, dt) -> Optional[str]:
+        """Formata datetime para string ISO"""
+        if dt is None:
+            return None
+        
+        # Se já é string, retorna como está
+        if isinstance(dt, str):
+            return dt
+        
+        # Se é datetime, converte para ISO
+        if isinstance(dt, datetime):
+            return dt.isoformat()
+        
+        return None
     
     @classmethod
     def from_dict(cls, data: dict) -> 'Usuario':
@@ -53,8 +68,8 @@ class Usuario:
             senha_hash=data.get("senha_hash"),
             tipo_usuario_id=data.get("tipo_usuario_id", 0),
             bp=data.get("bp"),
-            data_criacao=helpers.parse_datetime(data.get("data_criacao")),
-            data_atualizacao=helpers.parse_datetime(data.get("data_atualizacao")),
+            data_criacao=data.get("data_criacao"),
+            data_atualizacao=data.get("data_atualizacao"),
             tipo_usuario_nome=data.get("tipo_usuario_nome")
         )
     

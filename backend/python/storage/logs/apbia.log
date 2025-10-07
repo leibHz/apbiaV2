@@ -141,3 +141,104 @@
 2025-10-07 17:57:09 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'structure of query does not match function result type', 'code': '42804', 'hint': None, 'details': 'Returned type text does not match expected type character varying in column 2.'}
 2025-10-07 17:59:08 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'structure of query does not match function result type', 'code': '42804', 'hint': None, 'details': 'Returned type text does not match expected type character varying in column 2.'}
 2025-10-07 17:59:08 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'structure of query does not match function result type', 'code': '42804', 'hint': None, 'details': 'Returned type text does not match expected type character varying in column 2.'}
+2025-10-07 18:19:43 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 18:19:44 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 18:19:45 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 18:19:49 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 18:19:50 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 18:19:50 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 18:20:23 - APBIA - ERROR - Erro ao listar projetos: 'str' object has no attribute 'isoformat'
+2025-10-07 18:20:44 - APBIA - ERROR - Erro ao listar projetos: 'str' object has no attribute 'isoformat'
+2025-10-07 18:21:47 - APBIA - ERROR - Erro ao listar projetos: 'str' object has no attribute 'isoformat'
+2025-10-07 18:26:21 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 18:26:23 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 18:26:23 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 18:26:26 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 18:26:27 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 18:26:27 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 18:27:27 - APBIA - INFO - ✅ Registro criado em chats: ID 2
+2025-10-07 18:27:27 - APBIA - INFO - ✅ Chat criado: ID 2 - Projeto 2
+2025-10-07 18:27:46 - APBIA - INFO - ✅ Registro criado em mensagens: ID 2
+2025-10-07 18:27:46 - APBIA - WARNING - ⚠️  Nenhum arquivo de contexto encontrado
+2025-10-07 18:27:47 - APBIA - INFO - 📤 Enviando mensagem para Gemini...
+2025-10-07 18:27:48 - APBIA - INFO - ✅ Resposta recebida do Gemini
+2025-10-07 18:27:48 - APBIA - INFO - API_CALL | Service: Gemini | Tokens: 100
+2025-10-07 18:27:49 - APBIA - INFO - ✅ Registro criado em mensagens: ID 3
+2025-10-07 18:27:49 - APBIA - INFO - 📊 Requisição registrada | Tokens: 94 | Total mês: 1
+2025-10-07 18:28:47 - APBIA - INFO - ✅ Registro criado em mensagens: ID 4
+2025-10-07 18:28:47 - APBIA - WARNING - ⚠️  Nenhum arquivo de contexto encontrado
+2025-10-07 18:28:48 - APBIA - INFO - 📤 Enviando mensagem para Gemini...
+2025-10-07 18:28:56 - APBIA - INFO - ✅ Resposta recebida do Gemini
+2025-10-07 18:28:56 - APBIA - INFO - API_CALL | Service: Gemini | Tokens: 484
+2025-10-07 18:28:56 - APBIA - INFO - ✅ Registro criado em mensagens: ID 5
+2025-10-07 18:28:56 - APBIA - INFO - 📊 Requisição registrada | Tokens: 478 | Total mês: 2
+2025-10-07 18:36:56 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 18:37:53 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 18:37:54 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 18:37:56 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 0 arquivo(s) encontrado(s)
+2025-10-07 18:37:56 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 18:37:58 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 18:38:00 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 18:38:00 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 0 arquivo(s) encontrado(s)
+2025-10-07 18:38:00 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 18:38:23 - APBIA - INFO - ✅ Login bem-sucedido: biel508ferreiradasilva1105@gmail.com
+2025-10-07 18:38:54 - APBIA - INFO - 🔄 Processando mensagem do usuário 30 no chat 2
+2025-10-07 18:38:54 - APBIA - INFO - 💾 Salvando mensagem do usuário...
+2025-10-07 18:38:55 - APBIA - INFO - ✅ Registro criado em mensagens: ID 6
+2025-10-07 18:38:55 - APBIA - INFO - ✅ Mensagem do usuário salva - ID: 6
+2025-10-07 18:38:55 - APBIA - INFO - 📚 Carregando contextos da Bragantec...
+2025-10-07 18:38:55 - APBIA - INFO - 📥 Carregando contextos do bucket 'context-files'...
+2025-10-07 18:38:55 - APBIA - WARNING - ⚠️  Nenhum arquivo encontrado no bucket de contexto
+2025-10-07 18:38:55 - APBIA - WARNING - ⚠️  Nenhum contexto encontrado no bucket
+2025-10-07 18:38:55 - APBIA - INFO - 📜 Carregando histórico do chat...
+2025-10-07 18:38:56 - APBIA - INFO - ✅ Histórico carregado: 4 mensagem(ns) anterior(es)
+2025-10-07 18:38:56 - APBIA - INFO - 🤖 Gerando resposta da IA (thinking=False)...
+2025-10-07 18:38:56 - APBIA - INFO - 📤 Enviando mensagem para Gemini...
+2025-10-07 18:39:08 - APBIA - INFO - ✅ Resposta recebida do Gemini
+2025-10-07 18:39:08 - APBIA - INFO - API_CALL | Service: Gemini | Tokens: 760
+2025-10-07 18:39:08 - APBIA - INFO - ✅ Resposta da IA gerada (2939 caracteres)
+2025-10-07 18:39:08 - APBIA - INFO - 💾 Salvando resposta da IA...
+2025-10-07 18:39:10 - APBIA - INFO - ✅ Registro criado em mensagens: ID 7
+2025-10-07 18:39:10 - APBIA - INFO - ✅ Resposta da IA salva - ID: 7
+2025-10-07 18:39:11 - APBIA - INFO - 📊 Requisição registrada | Tokens: 754 | Total mês: 3
+2025-10-07 18:39:11 - APBIA - INFO - 📊 Uso da API registrado (~754 tokens)
+2025-10-07 18:40:12 - APBIA - INFO - 🔄 Processando mensagem do usuário 30 no chat 2
+2025-10-07 18:40:12 - APBIA - INFO - 💾 Salvando mensagem do usuário...
+2025-10-07 18:40:12 - APBIA - INFO - ✅ Registro criado em mensagens: ID 8
+2025-10-07 18:40:12 - APBIA - INFO - ✅ Mensagem do usuário salva - ID: 8
+2025-10-07 18:40:12 - APBIA - INFO - 📚 Carregando contextos da Bragantec...
+2025-10-07 18:40:12 - APBIA - INFO - 📥 Carregando contextos do bucket 'context-files'...
+2025-10-07 18:40:13 - APBIA - WARNING - ⚠️  Nenhum arquivo encontrado no bucket de contexto
+2025-10-07 18:40:13 - APBIA - WARNING - ⚠️  Nenhum contexto encontrado no bucket
+2025-10-07 18:40:13 - APBIA - INFO - 📜 Carregando histórico do chat...
+2025-10-07 18:40:14 - APBIA - INFO - ✅ Histórico carregado: 6 mensagem(ns) anterior(es)
+2025-10-07 18:40:14 - APBIA - INFO - 🤖 Gerando resposta da IA (thinking=False)...
+2025-10-07 18:40:14 - APBIA - INFO - 📤 Enviando mensagem para Gemini...
+2025-10-07 18:40:20 - APBIA - INFO - ✅ Resposta recebida do Gemini
+2025-10-07 18:40:20 - APBIA - INFO - API_CALL | Service: Gemini | Tokens: 550
+2025-10-07 18:40:20 - APBIA - INFO - ✅ Resposta da IA gerada (2117 caracteres)
+2025-10-07 18:40:20 - APBIA - INFO - 💾 Salvando resposta da IA...
+2025-10-07 18:40:20 - APBIA - INFO - ✅ Registro criado em mensagens: ID 9
+2025-10-07 18:40:20 - APBIA - INFO - ✅ Resposta da IA salva - ID: 9
+2025-10-07 18:40:20 - APBIA - INFO - 📊 Requisição registrada | Tokens: 544 | Total mês: 4
+2025-10-07 18:40:20 - APBIA - INFO - 📊 Uso da API registrado (~544 tokens)
+2025-10-07 18:41:01 - APBIA - INFO - 🔄 Processando mensagem do usuário 30 no chat 2
+2025-10-07 18:41:01 - APBIA - INFO - 💾 Salvando mensagem do usuário...
+2025-10-07 18:41:01 - APBIA - INFO - ✅ Registro criado em mensagens: ID 10
+2025-10-07 18:41:01 - APBIA - INFO - ✅ Mensagem do usuário salva - ID: 10
+2025-10-07 18:41:02 - APBIA - INFO - 📚 Carregando contextos da Bragantec...
+2025-10-07 18:41:02 - APBIA - INFO - 📥 Carregando contextos do bucket 'context-files'...
+2025-10-07 18:41:02 - APBIA - WARNING - ⚠️  Nenhum arquivo encontrado no bucket de contexto
+2025-10-07 18:41:02 - APBIA - WARNING - ⚠️  Nenhum contexto encontrado no bucket
+2025-10-07 18:41:02 - APBIA - INFO - 📜 Carregando histórico do chat...
+2025-10-07 18:41:03 - APBIA - INFO - ✅ Histórico carregado: 8 mensagem(ns) anterior(es)
+2025-10-07 18:41:03 - APBIA - INFO - 🤖 Gerando resposta da IA (thinking=False)...
+2025-10-07 18:41:03 - APBIA - INFO - 📤 Enviando mensagem para Gemini...
+2025-10-07 18:41:15 - APBIA - INFO - ✅ Resposta recebida do Gemini
+2025-10-07 18:41:15 - APBIA - INFO - API_CALL | Service: Gemini | Tokens: 828
+2025-10-07 18:41:15 - APBIA - INFO - ✅ Resposta da IA gerada (3236 caracteres)
+2025-10-07 18:41:15 - APBIA - INFO - 💾 Salvando resposta da IA...
+2025-10-07 18:41:15 - APBIA - INFO - ✅ Registro criado em mensagens: ID 11
+2025-10-07 18:41:15 - APBIA - INFO - ✅ Resposta da IA salva - ID: 11
+2025-10-07 18:41:16 - APBIA - INFO - 📊 Requisição registrada | Tokens: 822 | Total mês: 5
+2025-10-07 18:41:16 - APBIA - INFO - 📊 Uso da API registrado (~822 tokens)

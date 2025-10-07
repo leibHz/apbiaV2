@@ -27,8 +27,23 @@ class Arquivo:
             "url_arquivo": self.url_arquivo,
             "tipo_arquivo": self.tipo_arquivo,
             "tamanho_bytes": self.tamanho_bytes,
-            "data_upload": self.data_upload.isoformat() if self.data_upload else None
+            "data_upload": self._format_datetime(self.data_upload)
         }
+    
+    def _format_datetime(self, dt) -> Optional[str]:
+        """Formata datetime para string ISO"""
+        if dt is None:
+            return None
+        
+        # Se já é string, retorna como está
+        if isinstance(dt, str):
+            return dt
+        
+        # Se é datetime, converte para ISO
+        if isinstance(dt, datetime):
+            return dt.isoformat()
+        
+        return None
     
     @classmethod
     def from_dict(cls, data: dict) -> 'Arquivo':

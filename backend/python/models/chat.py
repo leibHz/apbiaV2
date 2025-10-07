@@ -28,7 +28,7 @@ class Chat:
             "projeto_id": self.projeto_id,
             "tipo_ia_id": self.tipo_ia_id,
             "titulo": self.titulo,
-            "data_criacao": self.data_criacao.isoformat() if self.data_criacao else None
+            "data_criacao": self._format_datetime(self.data_criacao)
         }
         
         if self.tipo_ia_nome:
@@ -41,6 +41,21 @@ class Chat:
             data["mensagens"] = self.mensagens
         
         return data
+    
+    def _format_datetime(self, dt) -> Optional[str]:
+        """Formata datetime para string ISO"""
+        if dt is None:
+            return None
+        
+        # Se já é string, retorna como está
+        if isinstance(dt, str):
+            return dt
+        
+        # Se é datetime, converte para ISO
+        if isinstance(dt, datetime):
+            return dt.isoformat()
+        
+        return None
     
     @classmethod
     def from_dict(cls, data: dict) -> 'Chat':

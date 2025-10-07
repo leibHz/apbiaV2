@@ -2,8 +2,8 @@
 Serviço de gerenciamento de contexto (arquivos TXT da Bragantec)
 """
 from typing import List, Optional, Tuple
-from services.supabase_service import supabase_service
 from config.settings import settings
+from config.database import db
 from utils.logger import logger
 
 
@@ -13,6 +13,17 @@ class ContextService:
     def __init__(self):
         self.bucket_name = settings.BUCKET_CONTEXT
         self.contextos_cache = {}  # Cache em memória dos contextos
+        self._verificar_bucket()
+    
+    def _verificar_bucket(self):
+        """Verifica se o bucket existe"""
+        try:
+            # Tenta listar arquivos para verificar acesso
+            bucket = db.get_storage().from_(self.bucket_name)
+            result = bucket.list()
+            logger.info(f"✅ Bucket '{self.bucket_name}' acessível - {len(result)} arquivo(s) encontrado(s)")
+        except Exception as e:
+            logger.warning(f"⚠️  Erro ao acessar bucket '{self.bucket_name}': {e}")
     
     def carregar_todos_contextos(self) -> Tuple[bool, Optional[List[str]], Optional[str]]:
         """
@@ -22,35 +33,49 @@ class ContextService:
             Tuple[success, lista_de_textos, error_message]
         """
         try:
+            logger.info(f"📥 Carregando contextos do bucket '{self.bucket_name}'...")
+            
             # Lista todos os arquivos no bucket
-            arquivos = supabase_service.listar_arquivos("", self.bucket_name)
+            bucket = db.get_storage().from_(self.bucket_name)
+            arquivos = bucket.list()
             
             if not arquivos:
-                logger.warning("⚠️  Nenhum arquivo de contexto encontrado")
+                logger.warning("⚠️  Nenhum arquivo encontrado no bucket de contexto")
                 return True, [], None
+            
+            logger.info(f"📂 Encontrados {len(arquivos)} arquivo(s) no bucket")
             
             contextos = []
             
             for arquivo in arquivos:
+                nome = arquivo.get('name', '')
+                
                 # Processa apenas arquivos TXT
-                if arquivo.get('name', '').endswith('.txt'):
-                    sucesso, conteudo, erro = self._carregar_arquivo_txt(arquivo['name'])
+                if nome.endswith('.txt'):
+                    logger.info(f"📄 Processando: {nome}")
+                    sucesso, conteudo, erro = self._carregar_arquivo_txt(nome)
                     
                     if sucesso and conteudo:
                         contextos.append(conteudo)
-                        logger.info(f"✅ Contexto carregado: {arquivo['name']}")
+                        logger.info(f"✅ Contexto carregado: {nome} ({len(conteudo)} caracteres)")
                     else:
-                        logger.warning(f"⚠️  Falha ao carregar: {arquivo['name']} - {erro}")
+                        logger.warning(f"⚠️  Falha ao carregar: {nome} - {erro}")
+                else:
+                    logger.debug(f"⏭️  Ignorando arquivo não-TXT: {nome}")
             
             # Atualiza cache
             self.contextos_cache['todos'] = contextos
             
-            logger.info(f"✅ Total de {len(contextos)} contextos carregados")
+            logger.info(f"✅ Total de {len(contextos)} contexto(s) carregado(s) com sucesso")
+            logger.info(f"📊 Total de caracteres carregados: {sum(len(c) for c in contextos)}")
+            
             return True, contextos, None
             
         except Exception as e:
             error_msg = f"Erro ao carregar contextos: {str(e)}"
             logger.error(f"❌ {error_msg}")
+            import traceback
+            logger.error(traceback.format_exc())
             return False, None, error_msg
     
     def carregar_contexto_por_ano(self, ano: int) -> Tuple[bool, Optional[List[str]], Optional[str]]:
@@ -61,23 +86,30 @@ class ContextService:
             Tuple[success, lista_de_textos, error_message]
         """
         try:
+            logger.info(f"📥 Carregando contextos do ano {ano}...")
+            
             # Lista arquivos do ano
             path_ano = f"edicao_{ano}/"
-            arquivos = supabase_service.listar_arquivos(path_ano, self.bucket_name)
+            bucket = db.get_storage().from_(self.bucket_name)
+            arquivos = bucket.list(path_ano)
             
             if not arquivos:
+                logger.info(f"ℹ️  Nenhum arquivo encontrado para o ano {ano}")
                 return True, [], None
             
             contextos = []
             
             for arquivo in arquivos:
-                if arquivo.get('name', '').endswith('.txt'):
-                    nome_completo = f"{path_ano}{arquivo['name']}"
+                nome = arquivo.get('name', '')
+                if nome.endswith('.txt'):
+                    nome_completo = f"{path_ano}{nome}"
                     sucesso, conteudo, erro = self._carregar_arquivo_txt(nome_completo)
                     
                     if sucesso and conteudo:
                         contextos.append(conteudo)
+                        logger.info(f"✅ Carregado: {nome_completo}")
             
+            logger.info(f"✅ {len(contextos)} contexto(s) do ano {ano} carregado(s)")
             return True, contextos, None
             
         except Exception as e:
@@ -104,6 +136,7 @@ class ContextService:
             if sucesso and conteudo:
                 # Adiciona ao cache
                 self.contextos_cache[nome_arquivo] = conteudo
+                logger.info(f"✅ Contexto carregado e adicionado ao cache: {nome_arquivo}")
                 return True, conteudo, None
             else:
                 return False, None, erro
@@ -115,34 +148,48 @@ class ContextService:
     
     def _carregar_arquivo_txt(self, file_path: str) -> Tuple[bool, Optional[str], Optional[str]]:
         """
-        Carrega conteúdo de arquivo TXT
+        Carrega conteúdo de arquivo TXT do Supabase
         
         Returns:
             Tuple[success, conteudo, error_message]
         """
         try:
-            sucesso, file_content, erro = supabase_service.download_arquivo(
-                file_path, 
-                self.bucket_name
-            )
+            logger.info(f"⬇️  Baixando arquivo: {file_path}")
             
-            if not sucesso:
-                return False, None, erro
+            bucket = db.get_storage().from_(self.bucket_name)
+            
+            # Download do arquivo
+            file_content = bucket.download(file_path)
+            
+            if not file_content:
+                return False, None, "Arquivo vazio ou não encontrado"
             
             # Decodifica bytes para string
             try:
                 texto = file_content.decode('utf-8')
+                logger.info(f"✅ Arquivo decodificado (UTF-8): {len(texto)} caracteres")
             except UnicodeDecodeError:
                 # Tenta outros encodings
                 try:
                     texto = file_content.decode('latin-1')
+                    logger.info(f"✅ Arquivo decodificado (Latin-1): {len(texto)} caracteres")
                 except:
                     texto = file_content.decode('cp1252')
+                    logger.info(f"✅ Arquivo decodificado (CP1252): {len(texto)} caracteres")
+            
+            # Remove espaços em branco excessivos
+            texto = texto.strip()
+            
+            if not texto:
+                return False, None, "Arquivo está vazio após processamento"
             
             return True, texto, None
             
         except Exception as e:
-            error_msg = f"Erro ao carregar arquivo TXT: {str(e)}"
+            error_msg = f"Erro ao carregar arquivo TXT '{file_path}': {str(e)}"
+            logger.error(f"❌ {error_msg}")
+            import traceback
+            logger.error(traceback.format_exc())
             return False, None, error_msg
     
     def upload_contexto(self, nome_arquivo: str, conteudo: str) -> Tuple[bool, Optional[str]]:
@@ -153,23 +200,25 @@ class ContextService:
             Tuple[success, error_message]
         """
         try:
+            logger.info(f"⬆️  Fazendo upload de contexto: {nome_arquivo}")
+            
             # Converte string para bytes
             file_content = conteudo.encode('utf-8')
             
+            bucket = db.get_storage().from_(self.bucket_name)
+            
             # Upload
-            sucesso, url, erro = supabase_service.upload_arquivo(
-                nome_arquivo,
-                file_content,
-                self.bucket_name
+            bucket.upload(
+                path=nome_arquivo,
+                file=file_content,
+                file_options={"content-type": "text/plain; charset=utf-8"}
             )
             
-            if sucesso:
-                # Adiciona ao cache
-                self.contextos_cache[nome_arquivo] = conteudo
-                logger.info(f"✅ Novo contexto adicionado: {nome_arquivo}")
-                return True, None
-            else:
-                return False, erro
+            # Adiciona ao cache
+            self.contextos_cache[nome_arquivo] = conteudo
+            
+            logger.info(f"✅ Novo contexto adicionado: {nome_arquivo}")
+            return True, None
             
         except Exception as e:
             error_msg = f"Erro ao fazer upload de contexto: {str(e)}"
@@ -184,20 +233,15 @@ class ContextService:
             Tuple[success, error_message]
         """
         try:
-            sucesso, erro = supabase_service.deletar_arquivo(
-                nome_arquivo,
-                self.bucket_name
-            )
+            bucket = db.get_storage().from_(self.bucket_name)
+            bucket.remove([nome_arquivo])
             
-            if sucesso:
-                # Remove do cache
-                if nome_arquivo in self.contextos_cache:
-                    del self.contextos_cache[nome_arquivo]
-                
-                logger.info(f"✅ Contexto deletado: {nome_arquivo}")
-                return True, None
-            else:
-                return False, erro
+            # Remove do cache
+            if nome_arquivo in self.contextos_cache:
+                del self.contextos_cache[nome_arquivo]
+            
+            logger.info(f"✅ Contexto deletado: {nome_arquivo}")
+            return True, None
             
         except Exception as e:
             error_msg = f"Erro ao deletar contexto: {str(e)}"
@@ -205,20 +249,23 @@ class ContextService:
             return False, error_msg
     
     def listar_contextos_disponiveis(self) -> List[dict]:
-        """Lista todos os contextos disponíveis"""
+        """Lista todos os contextos disponíveis no bucket"""
         try:
-            arquivos = supabase_service.listar_arquivos("", self.bucket_name)
+            bucket = db.get_storage().from_(self.bucket_name)
+            arquivos = bucket.list()
             
             # Filtra apenas TXT e formata
             contextos = []
             for arquivo in arquivos:
-                if arquivo.get('name', '').endswith('.txt'):
+                nome = arquivo.get('name', '')
+                if nome.endswith('.txt'):
                     contextos.append({
-                        'nome': arquivo['name'],
+                        'nome': nome,
                         'tamanho': arquivo.get('metadata', {}).get('size', 0),
                         'atualizado': arquivo.get('updated_at', '')
                     })
             
+            logger.info(f"📋 {len(contextos)} contexto(s) TXT disponível(is)")
             return contextos
             
         except Exception as e:
@@ -234,8 +281,24 @@ class ContextService:
         """Retorna resumo dos contextos carregados"""
         return {
             'total_cache': len(self.contextos_cache),
-            'contextos_em_cache': list(self.contextos_cache.keys())
+            'contextos_em_cache': list(self.contextos_cache.keys()),
+            'total_caracteres': sum(len(str(v)) for v in self.contextos_cache.values())
         }
+    
+    def testar_conexao_bucket(self) -> Tuple[bool, str]:
+        """Testa conexão com o bucket"""
+        try:
+            bucket = db.get_storage().from_(self.bucket_name)
+            arquivos = bucket.list()
+            
+            msg = f"✅ Conexão OK! {len(arquivos)} arquivo(s) encontrado(s)"
+            logger.info(msg)
+            return True, msg
+            
+        except Exception as e:
+            msg = f"❌ Erro na conexão: {str(e)}"
+            logger.error(msg)
+            return False, msg
 
 
 # Instância global

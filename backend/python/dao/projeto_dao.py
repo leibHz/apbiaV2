@@ -51,6 +51,54 @@ class ProjetoDAO(BaseDAO):
         results = self.find_all()
         return [self._enrich_projeto(Projeto.from_dict(r)) for r in results]
     
+    def listar_projetos_participante(self, participante_id: int) -> List[Projeto]:
+        """Lista projetos que um participante está vinculado"""
+        try:
+            # Busca IDs dos projetos
+            result = db.client.table('participantes_projetos').select('projeto_id').eq('participante_id', participante_id).execute()
+            
+            if not result.data:
+                return []
+            
+            projeto_ids = [r['projeto_id'] for r in result.data]
+            
+            # Busca os projetos
+            projetos = []
+            for projeto_id in projeto_ids:
+                projeto = self.buscar_por_id(projeto_id)
+                if projeto:
+                    projetos.append(projeto)
+            
+            return projetos
+            
+        except Exception as e:
+            logger.error(f"Erro ao listar projetos do participante: {e}")
+            return []
+    
+    def listar_projetos_orientador(self, orientador_id: int) -> List[Projeto]:
+        """Lista projetos que um orientador orienta"""
+        try:
+            # Busca IDs dos projetos
+            result = db.client.table('orientadores_projetos').select('projeto_id').eq('orientador_id', orientador_id).execute()
+            
+            if not result.data:
+                return []
+            
+            projeto_ids = [r['projeto_id'] for r in result.data]
+            
+            # Busca os projetos
+            projetos = []
+            for projeto_id in projeto_ids:
+                projeto = self.buscar_por_id(projeto_id)
+                if projeto:
+                    projetos.append(projeto)
+            
+            return projetos
+            
+        except Exception as e:
+            logger.error(f"Erro ao listar projetos do orientador: {e}")
+            return []
+    
     def atualizar_projeto(self, projeto: Projeto) -> Optional[Projeto]:
         """Atualiza projeto"""
         data = {

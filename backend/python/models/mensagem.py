@@ -29,7 +29,7 @@ class Mensagem:
             "usuario_id": self.usuario_id,
             "conteudo": self.conteudo,
             "e_nota_orientador": self.e_nota_orientador,
-            "data_envio": self.data_envio.isoformat() if self.data_envio else None
+            "data_envio": self._format_datetime(self.data_envio)
         }
         
         if self.usuario_nome:
@@ -39,6 +39,21 @@ class Mensagem:
             data["arquivos"] = self.arquivos
         
         return data
+    
+    def _format_datetime(self, dt) -> Optional[str]:
+        """Formata datetime para string ISO"""
+        if dt is None:
+            return None
+        
+        # Se já é string, retorna como está
+        if isinstance(dt, str):
+            return dt
+        
+        # Se é datetime, converte para ISO
+        if isinstance(dt, datetime):
+            return dt.isoformat()
+        
+        return None
     
     @classmethod
     def from_dict(cls, data: dict) -> 'Mensagem':
