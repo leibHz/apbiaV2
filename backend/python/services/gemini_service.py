@@ -1,18 +1,18 @@
 """
 Serviço de integração com Google Gemini AI
+CORRIGIDO: Agora usa corretamente os contextos TXT
 """
 import google.generativeai as genai
 from typing import Optional, List, Dict, Tuple
 from config.settings import settings
 from utils.logger import logger
-import time
 
 
 class GeminiService:
     """Serviço para interação com o Gemini AI"""
     
     def __init__(self):
-        # Configura API do Gemini
+        # Configura API
         genai.configure(api_key=settings.GOOGLE_API_KEY)
         
         # Configurações de geração
@@ -31,20 +31,12 @@ class GeminiService:
             {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
         ]
         
-        # Inicializa modelo
         self.model = None
         self._initialize_model()
     
     def _initialize_model(self):
         """Inicializa o modelo Gemini"""
         try:
-            # Configuração específica para thinking mode
-            model_config = {
-                "generation_config": self.generation_config,
-                "safety_settings": self.safety_settings
-            }
-            
-            # Se thinking mode estiver ativado, adiciona nas instruções do sistema
             system_instruction = self._get_system_instruction()
             
             self.model = genai.GenerativeModel(
@@ -56,137 +48,157 @@ class GeminiService:
             
             logger.info(f"✅ Modelo Gemini inicializado: {settings.GEMINI_MODEL}")
         except Exception as e:
-            logger.error(f"❌ Erro ao inicializar modelo Gemini: {e}")
+            logger.error(f"❌ Erro ao inicializar Gemini: {e}")
             raise
     
     def _get_system_instruction(self) -> str:
-        """Retorna as instruções do sistema para a IA"""
-        instruction = """Você é o APBIA (Ajudante de Projetos para Bragantec Baseado em IA), 
+        """Instruções do sistema para a IA"""
+        return """Você é o APBIA (Ajudante de Projetos para Bragantec Baseado em IA), 
 um assistente especializado em auxiliar estudantes do IFSP Bragança Paulista na feira de ciências Bragantec.
 
-Sua função é:
-1. Ajudar os estudantes a desenvolver projetos científicos de qualidade
-2. Fornecer ideias criativas e inovadoras para projetos
-3. Auxiliar no planejamento e organização dos projetos
+Sua personalidade deve ser:
+- Humana e empática, não robotizada
+- Entusiasmada e motivadora
+- Paciente e didática
+- Criativa e inovadora
+- Científica mas acessível
+
+Suas funções principais:
+1. Ajudar a desenvolver projetos científicos de qualidade
+2. Fornecer ideias criativas e inovadoras
+3. Auxiliar no planejamento e organização
 4. Responder dúvidas sobre metodologia científica
-5. Dar feedback construtivo sobre ideias e propostas
+5. Dar feedback construtivo
 
 Você tem acesso aos cadernos de resumos das edições anteriores da Bragantec como contexto.
+Use essas informações para inspirar e orientar os estudantes com base em projetos reais de sucesso.
 
-Seja sempre:
-- Didático e claro em suas explicações
-- Encorajador e positivo
-- Científico, mas acessível
-- Criativo ao sugerir ideias
-- Ético e responsável
-
-Se você receber uma pergunta complexa que requer reflexão profunda, use seu modo de pensamento 
-para analisar cuidadosamente antes de responder."""
-
-        if settings.GEMINI_THINKING_MODE:
-            instruction += "\n\nPara perguntas complexas, pense cuidadosamente antes de responder."
-        
-        return instruction
+IMPORTANTE: 
+- Sempre seja encorajador e positivo
+- Explique conceitos complexos de forma simples
+- Use exemplos práticos sempre que possível
+- Se não souber algo, seja honesto
+- Para perguntas complexas, pense cuidadosamente antes de responder"""
     
     def gerar_resposta(self, mensagem: str, contexto: Optional[List[str]] = None, 
                       historico: Optional[List[Dict]] = None) -> Tuple[bool, Optional[str], Optional[str]]:
         """
-        Gera resposta usando o Gemini
-        
-        Args:
-            mensagem: Mensagem do usuário
-            contexto: Lista de textos de contexto (arquivos TXT da Bragantec)
-            historico: Histórico de conversas anterior
-        
-        Returns:
-            Tuple[success, resposta, error_message]
+        Gera resposta usando o Gemini com contextos TXT
         """
         try:
-            # Inicia chat
+            logger.info(f"🤖 Gerando resposta para: {mensagem[:50]}...")
+            
+            # Prepara o prompt com contexto
+            prompt_completo = self._build_prompt_com_contexto(mensagem, contexto)
+            
+            logger.info(f"📝 Prompt construído com {len(prompt_completo)} caracteres")
+            if contexto:
+                logger.info(f"📚 Usando {len(contexto)} contexto(s) da Bragantec")
+            
+            # Se tem histórico, usa chat
             if historico:
                 chat = self.model.start_chat(history=self._format_historico(historico))
+                response = chat.send_message(prompt_completo)
             else:
-                chat = self.model.start_chat()
+                # Senão, gera resposta direta
+                response = self.model.generate_content(prompt_completo)
             
-            # Prepara prompt com contexto
-            prompt = self._build_prompt(mensagem, contexto)
-            
-            # Gera resposta
-            logger.info(f"📤 Enviando mensagem para Gemini...")
-            response = chat.send_message(prompt)
-            
-            # Extrai texto da resposta
             resposta_texto = response.text
             
-            logger.info(f"✅ Resposta recebida do Gemini")
-            logger.log_api_call("Gemini", self._estimate_tokens(prompt + resposta_texto))
+            logger.info(f"✅ Resposta gerada ({len(resposta_texto)} caracteres)")
+            logger.log_api_call("Gemini", self._estimate_tokens(prompt_completo + resposta_texto))
             
             return True, resposta_texto, None
             
         except Exception as e:
             error_msg = f"Erro ao gerar resposta: {str(e)}"
             logger.error(f"❌ {error_msg}")
+            import traceback
+            logger.error(traceback.format_exc())
             return False, None, error_msg
     
     def gerar_resposta_com_thinking(self, mensagem: str, contexto: Optional[List[str]] = None) -> Tuple[bool, Optional[str], Optional[str]]:
         """
-        Gera resposta usando thinking mode para perguntas complexas
-        
-        Returns:
-            Tuple[success, resposta, error_message]
+        Gera resposta com modo de pensamento profundo (thinking mode)
         """
         try:
-            # Adiciona instrução para pensar
-            prompt_thinking = f"""Esta é uma pergunta que requer reflexão cuidadosa.
-Por favor, pense profundamente sobre ela antes de responder.
+            logger.info(f"🧠 Modo THINKING ativado para pergunta complexa")
+            
+            # Prompt especial para thinking
+            prompt_thinking = f"""Esta é uma pergunta que requer reflexão profunda e análise cuidadosa.
+Por favor, pense sobre todos os aspectos antes de responder.
 
-Pergunta: {mensagem}"""
+Pergunta do estudante: {mensagem}"""
             
-            if contexto:
-                prompt_thinking += f"\n\nContexto disponível:\n{self._format_contexto(contexto)}"
+            # Adiciona contexto se disponível
+            if contexto and len(contexto) > 0:
+                prompt_thinking += "\n\n=== CONTEXTO (Projetos anteriores da Bragantec) ===\n"
+                prompt_thinking += self._format_contexto(contexto)
+                prompt_thinking += "\n=== FIM DO CONTEXTO ===\n\n"
+                prompt_thinking += "Use as informações do contexto para fundamentar sua resposta."
             
-            # Gera resposta com thinking
+            # Gera com configuração para pensamento mais profundo
             response = self.model.generate_content(
                 prompt_thinking,
                 generation_config={
                     **self.generation_config,
-                    "temperature": 0.9  # Aumenta criatividade para thinking
+                    "temperature": 0.9,  # Mais criatividade
+                    "top_p": 0.98
                 }
             )
             
             resposta_texto = response.text
             
-            logger.info(f"✅ Resposta com thinking mode gerada")
+            logger.info(f"✅ Resposta com thinking gerada ({len(resposta_texto)} chars)")
             return True, resposta_texto, None
             
         except Exception as e:
-            error_msg = f"Erro ao gerar resposta com thinking: {str(e)}"
+            error_msg = f"Erro no thinking mode: {str(e)}"
             logger.error(f"❌ {error_msg}")
             return False, None, error_msg
     
-    def _build_prompt(self, mensagem: str, contexto: Optional[List[str]] = None) -> str:
-        """Constrói o prompt com mensagem e contexto"""
+    def _build_prompt_com_contexto(self, mensagem: str, contexto: Optional[List[str]] = None) -> str:
+        """
+        Constrói prompt completo com contextos da Bragantec
+        """
         prompt = ""
         
-        if contexto:
-            prompt += "=== CONTEXTO (Cadernos de Resumos da Bragantec) ===\n"
-            prompt += self._format_contexto(contexto)
-            prompt += "\n=== FIM DO CONTEXTO ===\n\n"
+        # Adiciona contextos se existirem
+        if contexto and len(contexto) > 0:
+            prompt += "=== CONTEXTO: Cadernos de Resumos da Bragantec (Edições Anteriores) ===\n\n"
+            prompt += "Você tem acesso aos seguintes projetos e informações de edições passadas da Bragantec:\n\n"
+            
+            # Adiciona cada contexto separadamente
+            for i, ctx in enumerate(contexto, 1):
+                # Limita o tamanho de cada contexto para não exceder o limite do modelo
+                ctx_limitado = ctx[:15000] if len(ctx) > 15000 else ctx
+                prompt += f"--- Documento {i} ---\n{ctx_limitado}\n\n"
+            
+            prompt += "=== FIM DO CONTEXTO ===\n\n"
+            prompt += "Use as informações acima para inspirar e orientar o estudante, mencionando exemplos relevantes quando apropriado.\n\n"
         
-        prompt += f"Pergunta do estudante: {mensagem}"
+        # Adiciona a pergunta do usuário
+        prompt += f"Pergunta do estudante:\n{mensagem}\n\n"
+        prompt += "Responda de forma clara, didática e encorajadora, usando os exemplos do contexto quando relevante:"
         
         return prompt
     
     def _format_contexto(self, contexto: List[str]) -> str:
-        """Formata lista de contextos em texto único"""
-        return "\n\n---\n\n".join(contexto)
+        """Formata lista de contextos"""
+        resultado = ""
+        for i, ctx in enumerate(contexto, 1):
+            ctx_limitado = ctx[:15000] if len(ctx) > 15000 else ctx
+            resultado += f"\n--- Documento {i} ---\n{ctx_limitado}\n"
+        return resultado
     
     def _format_historico(self, historico: List[Dict]) -> List[Dict]:
-        """Formata histórico para o formato do Gemini"""
+        """Formata histórico para o Gemini"""
         formatted = []
         
         for msg in historico:
-            role = "user" if msg.get("usuario_id") else "model"
+            # Se usuario_id é None, é mensagem da IA
+            role = "model" if msg.get("usuario_id") is None else "user"
+            
             formatted.append({
                 "role": role,
                 "parts": [msg.get("conteudo", "")]
@@ -195,61 +207,29 @@ Pergunta: {mensagem}"""
         return formatted
     
     def _estimate_tokens(self, text: str) -> int:
-        """Estima número de tokens (aproximação)"""
-        # Aproximação: ~4 caracteres por token
+        """Estima tokens (aproximação: 4 chars = 1 token)"""
         return len(text) // 4
     
-    def upload_arquivo_para_gemini(self, file_path: str, file_content: bytes, mime_type: str) -> Tuple[bool, Optional[any], Optional[str]]:
+    def processar_documento_txt(self, conteudo_txt: str, pergunta: str) -> Tuple[bool, Optional[str], Optional[str]]:
         """
-        Faz upload de arquivo diretamente para o Gemini (para processamento de documentos)
-        
-        Returns:
-            Tuple[success, file_object, error_message]
+        Processa documento TXT com o Gemini
         """
         try:
-            # Salva arquivo temporariamente
-            import tempfile
-            with tempfile.NamedTemporaryFile(delete=False, suffix=Path(file_path).suffix) as tmp:
-                tmp.write(file_content)
-                tmp_path = tmp.name
+            prompt = f"""Documento fornecido:
+{conteudo_txt}
+
+Pergunta sobre o documento:
+{pergunta}
+
+Responda com base no conteúdo do documento acima:"""
             
-            # Upload para Gemini
-            file = genai.upload_file(tmp_path, mime_type=mime_type)
-            
-            # Aguarda processamento
-            while file.state.name == "PROCESSING":
-                time.sleep(2)
-                file = genai.get_file(file.name)
-            
-            if file.state.name == "FAILED":
-                raise Exception("Falha ao processar arquivo")
-            
-            logger.info(f"✅ Arquivo enviado para Gemini: {file_path}")
-            return True, file, None
-            
-        except Exception as e:
-            error_msg = f"Erro ao enviar arquivo para Gemini: {str(e)}"
-            logger.error(f"❌ {error_msg}")
-            return False, None, error_msg
-    
-    def processar_documento(self, file_object: any, pergunta: str) -> Tuple[bool, Optional[str], Optional[str]]:
-        """
-        Processa documento com o Gemini
-        
-        Returns:
-            Tuple[success, resposta, error_message]
-        """
-        try:
-            prompt = [file_object, pergunta]
             response = self.model.generate_content(prompt)
             
-            logger.info(f"✅ Documento processado")
+            logger.info(f"✅ Documento TXT processado")
             return True, response.text, None
             
         except Exception as e:
-            error_msg = f"Erro ao processar documento: {str(e)}"
-            logger.error(f"❌ {error_msg}")
-            return False, None, error_msg
+            return False, None, str(e)
 
 
 # Instância global

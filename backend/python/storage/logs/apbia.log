@@ -242,3 +242,35 @@
 2025-10-07 18:41:15 - APBIA - INFO - ✅ Resposta da IA salva - ID: 11
 2025-10-07 18:41:16 - APBIA - INFO - 📊 Requisição registrada | Tokens: 822 | Total mês: 5
 2025-10-07 18:41:16 - APBIA - INFO - 📊 Uso da API registrado (~822 tokens)
+2025-10-07 20:29:13 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:29:14 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:29:15 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 0 arquivo(s) encontrado(s)
+2025-10-07 20:29:16 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:29:18 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:29:19 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:29:21 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 0 arquivo(s) encontrado(s)
+2025-10-07 20:29:21 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:32:02 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:32:03 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:32:04 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 0 arquivo(s) encontrado(s)
+2025-10-07 20:32:05 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:32:07 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:32:08 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:32:09 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 0 arquivo(s) encontrado(s)
+2025-10-07 20:32:09 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:33:19 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:33:20 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:33:21 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 0 arquivo(s) encontrado(s)
+2025-10-07 20:33:21 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:33:24 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:33:25 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:33:25 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 0 arquivo(s) encontrado(s)
+2025-10-07 20:33:25 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:36:48 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:36:49 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:36:50 - APBIA - WARNING - ⚠️  Bucket 'context-files' está vazio ou inacessível
+2025-10-07 20:36:50 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:36:52 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:36:53 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:36:54 - APBIA - WARNING - ⚠️  Bucket 'context-files' está vazio ou inacessível
+2025-10-07 20:36:54 - APBIA - INFO - 📥 Estado do monitor carregado

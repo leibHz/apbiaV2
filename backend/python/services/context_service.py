@@ -1,5 +1,6 @@
 """
 Serviço de gerenciamento de contexto (arquivos TXT da Bragantec)
+CORRIGIDO: Agora carrega corretamente os TXTs do bucket Supabase
 """
 from typing import List, Optional, Tuple
 from config.settings import settings
@@ -12,18 +13,30 @@ class ContextService:
     
     def __init__(self):
         self.bucket_name = settings.BUCKET_CONTEXT
-        self.contextos_cache = {}  # Cache em memória dos contextos
+        self.contextos_cache = {}
         self._verificar_bucket()
     
     def _verificar_bucket(self):
         """Verifica se o bucket existe"""
         try:
-            # Tenta listar arquivos para verificar acesso
-            bucket = db.get_storage().from_(self.bucket_name)
-            result = bucket.list()
-            logger.info(f"✅ Bucket '{self.bucket_name}' acessível - {len(result)} arquivo(s) encontrado(s)")
+            bucket = db.client.storage.from_(self.bucket_name)
+            # Lista arquivos na raiz do bucket (path vazio)
+            result = bucket.list(path='')
+            
+            if result and len(result) > 0:
+                logger.info(f"✅ Bucket '{self.bucket_name}' acessível - {len(result)} arquivo(s) encontrado(s)")
+                logger.info("📂 Arquivos no bucket:")
+                for arquivo in result:
+                    nome = arquivo.get('name', 'sem nome')
+                    tamanho = arquivo.get('metadata', {}).get('size', 0)
+                    logger.info(f"  - {nome} ({tamanho} bytes)")
+            else:
+                logger.warning(f"⚠️  Bucket '{self.bucket_name}' está vazio ou inacessível")
+                
         except Exception as e:
             logger.warning(f"⚠️  Erro ao acessar bucket '{self.bucket_name}': {e}")
+            import traceback
+            logger.error(traceback.format_exc())
     
     def carregar_todos_contextos(self) -> Tuple[bool, Optional[List[str]], Optional[str]]:
         """
@@ -35,12 +48,18 @@ class ContextService:
         try:
             logger.info(f"📥 Carregando contextos do bucket '{self.bucket_name}'...")
             
-            # Lista todos os arquivos no bucket
-            bucket = db.get_storage().from_(self.bucket_name)
-            arquivos = bucket.list()
+            # Verifica se já está em cache
+            if 'todos' in self.contextos_cache and self.contextos_cache['todos']:
+                logger.info(f"📦 Usando {len(self.contextos_cache['todos'])} contexto(s) do cache")
+                return True, self.contextos_cache['todos'], None
             
-            if not arquivos:
+            # Lista todos os arquivos no bucket - IMPORTANTE: usar path='' para raiz
+            bucket = db.client.storage.from_(self.bucket_name)
+            arquivos = bucket.list(path='')
+            
+            if not arquivos or len(arquivos) == 0:
                 logger.warning("⚠️  Nenhum arquivo encontrado no bucket de contexto")
+                logger.warning(f"⚠️  Verifique se os arquivos estão na RAIZ do bucket '{self.bucket_name}'")
                 return True, [], None
             
             logger.info(f"📂 Encontrados {len(arquivos)} arquivo(s) no bucket")
@@ -51,23 +70,49 @@ class ContextService:
                 nome = arquivo.get('name', '')
                 
                 # Processa apenas arquivos TXT
-                if nome.endswith('.txt'):
+                if nome.lower().endswith('.txt'):
                     logger.info(f"📄 Processando: {nome}")
-                    sucesso, conteudo, erro = self._carregar_arquivo_txt(nome)
                     
-                    if sucesso and conteudo:
-                        contextos.append(conteudo)
-                        logger.info(f"✅ Contexto carregado: {nome} ({len(conteudo)} caracteres)")
-                    else:
-                        logger.warning(f"⚠️  Falha ao carregar: {nome} - {erro}")
+                    try:
+                        # Download do arquivo - usar nome do arquivo diretamente
+                        file_bytes = bucket.download(nome)
+                        
+                        if file_bytes:
+                            # Tenta decodificar com diferentes encodings
+                            conteudo = None
+                            for encoding in ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']:
+                                try:
+                                    conteudo = file_bytes.decode(encoding)
+                                    logger.info(f"✅ Decodificado com {encoding}: {nome} ({len(conteudo)} chars)")
+                                    break
+                                except UnicodeDecodeError:
+                                    continue
+                            
+                            if conteudo and conteudo.strip():
+                                contextos.append(conteudo.strip())
+                                logger.info(f"✅ Contexto carregado: {nome}")
+                            else:
+                                logger.warning(f"⚠️  Arquivo vazio após decodificação: {nome}")
+                        else:
+                            logger.warning(f"⚠️  Arquivo vazio: {nome}")
+                            
+                    except Exception as e:
+                        logger.warning(f"⚠️  Erro ao processar {nome}: {e}")
+                        import traceback
+                        logger.error(traceback.format_exc())
+                        continue
                 else:
                     logger.debug(f"⏭️  Ignorando arquivo não-TXT: {nome}")
             
             # Atualiza cache
-            self.contextos_cache['todos'] = contextos
-            
-            logger.info(f"✅ Total de {len(contextos)} contexto(s) carregado(s) com sucesso")
-            logger.info(f"📊 Total de caracteres carregados: {sum(len(c) for c in contextos)}")
+            if contextos:
+                self.contextos_cache['todos'] = contextos
+                total_chars = sum(len(c) for c in contextos)
+                logger.info(f"✅ Total de {len(contextos)} contexto(s) carregado(s)")
+                logger.info(f"📊 Total de caracteres: {total_chars}")
+            else:
+                logger.warning("⚠️  Nenhum contexto válido foi carregado")
+                logger.warning("⚠️  Verifique se os arquivos TXT estão corretos e na raiz do bucket")
             
             return True, contextos, None
             
@@ -79,164 +124,106 @@ class ContextService:
             return False, None, error_msg
     
     def carregar_contexto_por_ano(self, ano: int) -> Tuple[bool, Optional[List[str]], Optional[str]]:
-        """
-        Carrega contextos de um ano específico
-        
-        Returns:
-            Tuple[success, lista_de_textos, error_message]
-        """
+        """Carrega contextos de um ano específico"""
         try:
             logger.info(f"📥 Carregando contextos do ano {ano}...")
             
-            # Lista arquivos do ano
-            path_ano = f"edicao_{ano}/"
-            bucket = db.get_storage().from_(self.bucket_name)
-            arquivos = bucket.list(path_ano)
+            bucket = db.client.storage.from_(self.bucket_name)
+            # Lista todos os arquivos da raiz
+            arquivos = bucket.list(path='')
             
             if not arquivos:
-                logger.info(f"ℹ️  Nenhum arquivo encontrado para o ano {ano}")
                 return True, [], None
             
             contextos = []
             
+            # Busca arquivos que contenham o ano no nome
             for arquivo in arquivos:
                 nome = arquivo.get('name', '')
-                if nome.endswith('.txt'):
-                    nome_completo = f"{path_ano}{nome}"
-                    sucesso, conteudo, erro = self._carregar_arquivo_txt(nome_completo)
-                    
-                    if sucesso and conteudo:
-                        contextos.append(conteudo)
-                        logger.info(f"✅ Carregado: {nome_completo}")
+                if nome.lower().endswith('.txt') and str(ano) in nome:
+                    try:
+                        file_bytes = bucket.download(nome)
+                        if file_bytes:
+                            for encoding in ['utf-8', 'latin-1', 'cp1252']:
+                                try:
+                                    conteudo = file_bytes.decode(encoding).strip()
+                                    if conteudo:
+                                        contextos.append(conteudo)
+                                        logger.info(f"✅ Carregado: {nome}")
+                                    break
+                                except UnicodeDecodeError:
+                                    continue
+                    except Exception as e:
+                        logger.warning(f"⚠️  Erro ao carregar {nome}: {e}")
             
             logger.info(f"✅ {len(contextos)} contexto(s) do ano {ano} carregado(s)")
             return True, contextos, None
             
         except Exception as e:
-            error_msg = f"Erro ao carregar contextos do ano {ano}: {str(e)}"
-            logger.error(f"❌ {error_msg}")
-            return False, None, error_msg
+            return False, None, str(e)
     
     def carregar_contexto_especifico(self, nome_arquivo: str) -> Tuple[bool, Optional[str], Optional[str]]:
-        """
-        Carrega um arquivo de contexto específico
-        
-        Returns:
-            Tuple[success, texto, error_message]
-        """
+        """Carrega um arquivo de contexto específico"""
         try:
-            # Verifica cache primeiro
+            # Verifica cache
             if nome_arquivo in self.contextos_cache:
                 logger.info(f"📦 Contexto recuperado do cache: {nome_arquivo}")
                 return True, self.contextos_cache[nome_arquivo], None
             
             # Carrega do Supabase
-            sucesso, conteudo, erro = self._carregar_arquivo_txt(nome_arquivo)
+            bucket = db.client.storage.from_(self.bucket_name)
+            file_bytes = bucket.download(nome_arquivo)
             
-            if sucesso and conteudo:
-                # Adiciona ao cache
-                self.contextos_cache[nome_arquivo] = conteudo
-                logger.info(f"✅ Contexto carregado e adicionado ao cache: {nome_arquivo}")
-                return True, conteudo, None
-            else:
-                return False, None, erro
+            if not file_bytes:
+                return False, None, "Arquivo não encontrado ou vazio"
             
-        except Exception as e:
-            error_msg = f"Erro ao carregar contexto específico: {str(e)}"
-            logger.error(f"❌ {error_msg}")
-            return False, None, error_msg
-    
-    def _carregar_arquivo_txt(self, file_path: str) -> Tuple[bool, Optional[str], Optional[str]]:
-        """
-        Carrega conteúdo de arquivo TXT do Supabase
-        
-        Returns:
-            Tuple[success, conteudo, error_message]
-        """
-        try:
-            logger.info(f"⬇️  Baixando arquivo: {file_path}")
-            
-            bucket = db.get_storage().from_(self.bucket_name)
-            
-            # Download do arquivo
-            file_content = bucket.download(file_path)
-            
-            if not file_content:
-                return False, None, "Arquivo vazio ou não encontrado"
-            
-            # Decodifica bytes para string
-            try:
-                texto = file_content.decode('utf-8')
-                logger.info(f"✅ Arquivo decodificado (UTF-8): {len(texto)} caracteres")
-            except UnicodeDecodeError:
-                # Tenta outros encodings
+            # Tenta decodificar
+            for encoding in ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']:
                 try:
-                    texto = file_content.decode('latin-1')
-                    logger.info(f"✅ Arquivo decodificado (Latin-1): {len(texto)} caracteres")
-                except:
-                    texto = file_content.decode('cp1252')
-                    logger.info(f"✅ Arquivo decodificado (CP1252): {len(texto)} caracteres")
+                    conteudo = file_bytes.decode(encoding).strip()
+                    if conteudo:
+                        self.contextos_cache[nome_arquivo] = conteudo
+                        logger.info(f"✅ Contexto carregado: {nome_arquivo}")
+                        return True, conteudo, None
+                except UnicodeDecodeError:
+                    continue
             
-            # Remove espaços em branco excessivos
-            texto = texto.strip()
-            
-            if not texto:
-                return False, None, "Arquivo está vazio após processamento"
-            
-            return True, texto, None
+            return False, None, "Não foi possível decodificar o arquivo"
             
         except Exception as e:
-            error_msg = f"Erro ao carregar arquivo TXT '{file_path}': {str(e)}"
+            error_msg = f"Erro ao carregar contexto: {str(e)}"
             logger.error(f"❌ {error_msg}")
-            import traceback
-            logger.error(traceback.format_exc())
             return False, None, error_msg
     
     def upload_contexto(self, nome_arquivo: str, conteudo: str) -> Tuple[bool, Optional[str]]:
-        """
-        Faz upload de novo arquivo de contexto
-        
-        Returns:
-            Tuple[success, error_message]
-        """
+        """Upload de novo contexto"""
         try:
             logger.info(f"⬆️  Fazendo upload de contexto: {nome_arquivo}")
             
-            # Converte string para bytes
-            file_content = conteudo.encode('utf-8')
+            file_bytes = conteudo.encode('utf-8')
+            bucket = db.client.storage.from_(self.bucket_name)
             
-            bucket = db.get_storage().from_(self.bucket_name)
-            
-            # Upload
             bucket.upload(
                 path=nome_arquivo,
-                file=file_content,
+                file=file_bytes,
                 file_options={"content-type": "text/plain; charset=utf-8"}
             )
             
             # Adiciona ao cache
             self.contextos_cache[nome_arquivo] = conteudo
             
-            logger.info(f"✅ Novo contexto adicionado: {nome_arquivo}")
+            logger.info(f"✅ Contexto adicionado: {nome_arquivo}")
             return True, None
             
         except Exception as e:
-            error_msg = f"Erro ao fazer upload de contexto: {str(e)}"
-            logger.error(f"❌ {error_msg}")
-            return False, error_msg
+            return False, str(e)
     
     def deletar_contexto(self, nome_arquivo: str) -> Tuple[bool, Optional[str]]:
-        """
-        Deleta arquivo de contexto
-        
-        Returns:
-            Tuple[success, error_message]
-        """
+        """Deleta arquivo de contexto"""
         try:
-            bucket = db.get_storage().from_(self.bucket_name)
+            bucket = db.client.storage.from_(self.bucket_name)
             bucket.remove([nome_arquivo])
             
-            # Remove do cache
             if nome_arquivo in self.contextos_cache:
                 del self.contextos_cache[nome_arquivo]
             
@@ -244,21 +231,19 @@ class ContextService:
             return True, None
             
         except Exception as e:
-            error_msg = f"Erro ao deletar contexto: {str(e)}"
-            logger.error(f"❌ {error_msg}")
-            return False, error_msg
+            return False, str(e)
     
     def listar_contextos_disponiveis(self) -> List[dict]:
-        """Lista todos os contextos disponíveis no bucket"""
+        """Lista todos os contextos disponíveis"""
         try:
-            bucket = db.get_storage().from_(self.bucket_name)
-            arquivos = bucket.list()
+            bucket = db.client.storage.from_(self.bucket_name)
+            # Lista arquivos na raiz do bucket
+            arquivos = bucket.list(path='')
             
-            # Filtra apenas TXT e formata
             contextos = []
             for arquivo in arquivos:
                 nome = arquivo.get('name', '')
-                if nome.endswith('.txt'):
+                if nome.lower().endswith('.txt'):
                     contextos.append({
                         'nome': nome,
                         'tamanho': arquivo.get('metadata', {}).get('size', 0),
@@ -270,6 +255,8 @@ class ContextService:
             
         except Exception as e:
             logger.error(f"❌ Erro ao listar contextos: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return []
     
     def limpar_cache(self):
@@ -278,7 +265,7 @@ class ContextService:
         logger.info("🗑️  Cache de contextos limpo")
     
     def obter_resumo_contextos(self) -> dict:
-        """Retorna resumo dos contextos carregados"""
+        """Retorna resumo dos contextos"""
         return {
             'total_cache': len(self.contextos_cache),
             'contextos_em_cache': list(self.contextos_cache.keys()),
@@ -288,16 +275,27 @@ class ContextService:
     def testar_conexao_bucket(self) -> Tuple[bool, str]:
         """Testa conexão com o bucket"""
         try:
-            bucket = db.get_storage().from_(self.bucket_name)
-            arquivos = bucket.list()
+            bucket = db.client.storage.from_(self.bucket_name)
+            # Lista arquivos na raiz
+            arquivos = bucket.list(path='')
             
-            msg = f"✅ Conexão OK! {len(arquivos)} arquivo(s) encontrado(s)"
-            logger.info(msg)
-            return True, msg
+            if arquivos and len(arquivos) > 0:
+                msg = f"✅ Conexão OK! {len(arquivos)} arquivo(s) encontrado(s)"
+                logger.info(msg)
+                logger.info("📂 Arquivos encontrados:")
+                for arq in arquivos:
+                    logger.info(f"  - {arq.get('name', 'sem nome')}")
+                return True, msg
+            else:
+                msg = "⚠️  Bucket acessível mas vazio"
+                logger.warning(msg)
+                return True, msg
             
         except Exception as e:
             msg = f"❌ Erro na conexão: {str(e)}"
             logger.error(msg)
+            import traceback
+            logger.error(traceback.format_exc())
             return False, msg
 
 

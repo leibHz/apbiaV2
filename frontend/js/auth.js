@@ -1,293 +1,197 @@
 /**
- * Sistema de Autenticação APBIA
+ * APBIA - Autenticação (CORRIGIDO)
  */
 
-// Configuração
-const API_URL = 'http://localhost:5000/api';
-
-// Elementos DOM
-let loginForm, emailInput, senhaInput, bpInput, bpField, isOrientadorCheckbox;
-let errorMessage, errorText, successMessage, successText;
-let loginBtn, loadingOverlay, togglePassword;
-
-// Inicialização
 document.addEventListener('DOMContentLoaded', function() {
-    initElements();
-    initEventListeners();
-    checkExistingAuth();
+    console.log('🔐 Módulo de autenticação carregado');
+    
+    // Verifica se já está autenticado
+    if (isAuthenticated()) {
+        console.log('✅ Usuário já autenticado, redirecionando...');
+        window.location.href = '/public/projetos.html';
+        return;
+    }
+    
+    // Inicializa form de login
+    initLoginForm();
+    initPasswordToggle();
+    initBPField();
 });
 
 /**
- * Inicializa elementos DOM
+ * Inicializa formulário de login
  */
-function initElements() {
-    loginForm = document.getElementById('loginForm');
-    emailInput = document.getElementById('email');
-    senhaInput = document.getElementById('senha');
-    bpInput = document.getElementById('bp');
-    bpField = document.getElementById('bpField');
-    isOrientadorCheckbox = document.getElementById('isOrientador');
-    errorMessage = document.getElementById('errorMessage');
-    errorText = document.getElementById('errorText');
-    successMessage = document.getElementById('successMessage');
-    successText = document.getElementById('successText');
-    loginBtn = document.getElementById('loginBtn');
-    loadingOverlay = document.getElementById('loadingOverlay');
-    togglePassword = document.getElementById('togglePassword');
-}
-
-/**
- * Inicializa event listeners
- */
-function initEventListeners() {
-    // Submit do formulário
-    loginForm.addEventListener('submit', handleLogin);
+function initLoginForm() {
+    const form = document.getElementById('loginForm');
+    if (!form) return;
     
-    // Toggle orientador
-    isOrientadorCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            bpField.style.display = 'none';
-            bpInput.required = false;
-            bpInput.value = '';
-        } else {
-            bpField.style.display = 'block';
-            bpInput.required = false; // Não obrigatório pois admin também não precisa
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Limpa erros anteriores
+        clearFieldErrors();
+        hideMessage('errorMessage');
+        hideMessage('successMessage');
+        
+        // Obtém valores
+        const email = document.getElementById('email').value.trim();
+        const senha = document.getElementById('senha').value;
+        const bp = document.getElementById('bp').value.trim().toUpperCase();
+        const isOrientadorCheckbox = document.getElementById('isOrientador').checked;
+        
+        // Validações
+        if (!validateEmail(email)) {
+            showFieldError('email', 'Email inválido');
+            return;
         }
-    });
-    
-    // Toggle senha
-    togglePassword.addEventListener('click', function() {
-        const type = senhaInput.type === 'password' ? 'text' : 'password';
-        senhaInput.type = type;
-        this.querySelector('i').classList.toggle('fa-eye');
-        this.querySelector('i').classList.toggle('fa-eye-slash');
-    });
-    
-    // Auto-formatar BP
-    bpInput.addEventListener('input', function() {
-        this.value = this.value.toUpperCase();
-    });
-}
-
-/**
- * Verifica se já existe autenticação
- */
-function checkExistingAuth() {
-    const token = localStorage.getItem('apbia_token');
-    const userData = localStorage.getItem('apbia_user');
-    
-    if (token && userData) {
-        // Valida token
-        validateToken(token).then(valid => {
-            if (valid) {
-                const user = JSON.parse(userData);
-                redirectUser(user);
-            } else {
-                // Token inválido, limpa storage
-                clearAuth();
+        
+        if (!senha || senha.length < 6) {
+            showFieldError('senha', 'Senha muito curta');
+            return;
+        }
+        
+        // Se não é orientador, valida BP
+        if (!isOrientadorCheckbox) {
+            if (!bp) {
+                showFieldError('bp', 'BP é obrigatório para participantes');
+                return;
             }
-        });
-    }
-}
-
-/**
- * Valida token no servidor
- */
-async function validateToken(token) {
-    try {
-        const response = await fetch(`${API_URL}/auth/validate`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
+            
+            if (!validateBP(bp)) {
+                showFieldError('bp', 'BP inválido. Formato: BRG12345678');
+                return;
             }
-        });
-        return response.ok;
-    } catch (error) {
-        console.error('Erro ao validar token:', error);
-        return false;
-    }
+        }
+        
+        // Faz login
+        await realizarLogin(email, senha, isOrientadorCheckbox ? null : bp);
+    });
 }
 
 /**
- * Handle do login
+ * Realiza login via API
  */
-async function handleLogin(e) {
-    e.preventDefault();
-    
-    // Esconde mensagens
-    hideMessages();
-    
-    // Validação básica
-    const email = emailInput.value.trim();
-    const senha = senhaInput.value;
-    const bp = !isOrientadorCheckbox.checked ? bpInput.value.trim() : null;
-    
-    if (!email || !senha) {
-        showError('Por favor, preencha todos os campos obrigatórios');
-        return;
-    }
-    
-    // Valida formato do BP se fornecido
-    if (bp && !validateBP(bp)) {
-        showError('BP inválido. Use o formato: BRG12345678');
-        return;
-    }
-    
-    // Mostra loading
-    showLoading(true);
-    setButtonLoading(true);
-    
+async function realizarLogin(email, senha, bp) {
     try {
-        // Prepara dados
-        const loginData = {
+        showLoading('Entrando...');
+        
+        const data = {
             email: email,
             senha: senha
         };
         
+        // Adiciona BP se não for nulo
         if (bp) {
-            loginData.bp = bp;
+            data.bp = bp;
         }
         
-        // Faz requisição
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginData)
-        });
+        console.log('📤 Enviando requisição de login...');
         
-        const data = await response.json();
+        const response = await api.login(data);
         
-        if (response.ok && data.success) {
-            // Login bem-sucedido
-            const userData = data.data;
+        hideLoading();
+        
+        if (response.success) {
+            console.log('✅ Login bem-sucedido!');
             
-            // Salva no localStorage
-            localStorage.setItem('apbia_token', userData.token);
-            localStorage.setItem('apbia_user', JSON.stringify(userData));
+            // Salva token e dados do usuário
+            saveToken(response.data.token);
+            saveUser(response.data);
             
-            // Mostra sucesso
-            showSuccess('Login realizado com sucesso! Redirecionando...');
+            // Mostra mensagem de sucesso
+            showMessage('successMessage', 'Login realizado com sucesso! Redirecionando...');
             
             // Redireciona após 1 segundo
             setTimeout(() => {
-                redirectUser(userData);
+                window.location.href = '/public/projetos.html';
             }, 1000);
             
         } else {
-            // Erro no login
-            showError(data.message || 'Erro ao fazer login. Verifique suas credenciais.');
+            console.error('❌ Erro no login:', response.message);
+            showMessage('errorMessage', response.message || 'Erro ao fazer login');
         }
         
     } catch (error) {
-        console.error('Erro ao fazer login:', error);
-        showError('Erro de conexão com o servidor. Tente novamente.');
-    } finally {
-        showLoading(false);
-        setButtonLoading(false);
+        hideLoading();
+        console.error('❌ Erro ao fazer login:', error);
+        showMessage('errorMessage', 'Erro ao conectar com o servidor. Tente novamente.');
     }
 }
 
 /**
- * Valida formato do BP
+ * Inicializa toggle de senha
  */
-function validateBP(bp) {
-    const regex = /^BRG\d{8}$/;
-    return regex.test(bp);
-}
-
-/**
- * Redireciona usuário baseado no tipo
- */
-function redirectUser(userData) {
-    const tipoUsuario = userData.tipo_usuario_nome;
+function initPasswordToggle() {
+    const toggleBtn = document.getElementById('togglePassword');
+    const senhaInput = document.getElementById('senha');
     
-    switch(tipoUsuario) {
-        case 'admin':
-            window.location.href = 'admin.html';
-            break;
-        case 'orientador':
-            window.location.href = 'projetos.html';
-            break;
-        case 'participante':
-            window.location.href = 'projetos.html';
-            break;
-        default:
-            window.location.href = 'projetos.html';
+    if (!toggleBtn || !senhaInput) return;
+    
+    toggleBtn.addEventListener('click', function() {
+        const type = senhaInput.type === 'password' ? 'text' : 'password';
+        senhaInput.type = type;
+        
+        // Troca ícone
+        const icon = toggleBtn.querySelector('i');
+        if (icon) {
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        }
+    });
+}
+
+/**
+ * Inicializa campo BP (mostra/esconde baseado no checkbox)
+ */
+function initBPField() {
+    const checkbox = document.getElementById('isOrientador');
+    const bpField = document.getElementById('bpField');
+    const bpInput = document.getElementById('bp');
+    
+    if (!checkbox || !bpField || !bpInput) return;
+    
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            // É orientador - esconde BP
+            bpField.style.display = 'none';
+            bpInput.value = '';
+            bpInput.required = false;
+        } else {
+            // É participante - mostra BP
+            bpField.style.display = 'block';
+            bpInput.required = true;
+        }
+    });
+}
+
+/**
+ * Mostra mensagem de erro/sucesso
+ */
+function showMessage(elementId, text) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const textElement = element.querySelector('span');
+    if (textElement) {
+        textElement.textContent = text;
     }
-}
-
-/**
- * Limpa autenticação
- */
-function clearAuth() {
-    localStorage.removeItem('apbia_token');
-    localStorage.removeItem('apbia_user');
-}
-
-/**
- * Mostra mensagem de erro
- */
-function showError(message) {
-    errorText.textContent = message;
-    errorMessage.classList.remove('hidden');
-    successMessage.classList.add('hidden');
+    
+    element.classList.remove('hidden');
     
     // Auto-hide após 5 segundos
     setTimeout(() => {
-        errorMessage.classList.add('hidden');
+        hideMessage(elementId);
     }, 5000);
 }
 
 /**
- * Mostra mensagem de sucesso
+ * Esconde mensagem
  */
-function showSuccess(message) {
-    successText.textContent = message;
-    successMessage.classList.remove('hidden');
-    errorMessage.classList.add('hidden');
-}
-
-/**
- * Esconde todas as mensagens
- */
-function hideMessages() {
-    errorMessage.classList.add('hidden');
-    successMessage.classList.add('hidden');
-}
-
-/**
- * Mostra/esconde loading overlay
- */
-function showLoading(show) {
-    if (show) {
-        loadingOverlay.classList.remove('hidden');
-    } else {
-        loadingOverlay.classList.add('hidden');
+function hideMessage(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.classList.add('hidden');
     }
 }
 
-/**
- * Altera estado do botão de login
- */
-function setButtonLoading(loading) {
-    if (loading) {
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Entrando...';
-    } else {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Entrar';
-    }
-}
-
-/**
- * Função para logout (usada em outras páginas)
- */
-function logout() {
-    clearAuth();
-    window.location.href = 'index.html';
-}
-
-// Exporta funções globais
-window.logout = logout;
-window.clearAuth = clearAuth;
+console.log('✅ auth.js carregado e pronto');

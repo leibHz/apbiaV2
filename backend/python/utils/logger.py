@@ -1,5 +1,5 @@
 """
-Sistema de logging para o APBIA
+Sistema de logging para o APBIA (CORRIGIDO)
 """
 import logging
 import sys
@@ -15,7 +15,7 @@ class Logger:
         self.logger = logging.getLogger(settings.PROJECT_NAME)
         self.logger.setLevel(getattr(logging, settings.LOG_LEVEL))
         
-        # Remove handlers existentes para evitar duplicação
+        # Remove handlers existentes
         self.logger.handlers = []
         
         # Formatter
@@ -35,7 +35,6 @@ class Logger:
     def _setup_file_handler(self, formatter):
         """Configura o handler de arquivo"""
         try:
-            # Cria diretório de logs se não existir
             log_dir = settings.LOG_FILE.parent
             log_dir.mkdir(parents=True, exist_ok=True)
             
@@ -73,11 +72,18 @@ class Logger:
         """Log de chamada à API externa"""
         self.info(f"API_CALL | Service: {service} | Tokens: {tokens_used}")
     
-    def log_error_trace(self, error: Exception, context: str = ""):
-        """Log de erro com traceback"""
+    def error_trace(self, error: Exception, context: str = ""):
+        """
+        Log de erro com traceback completo
+        CORRIGIDO: Agora funciona corretamente
+        """
         import traceback
         error_trace = ''.join(traceback.format_exception(type(error), error, error.__traceback__))
         self.error(f"ERROR | Context: {context}\n{error_trace}")
+    
+    def log_error_trace(self, error: Exception, context: str = ""):
+        """Alias para error_trace (compatibilidade)"""
+        self.error_trace(error, context)
 
 
 # Instância global do logger
