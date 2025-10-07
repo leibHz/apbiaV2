@@ -274,3 +274,31 @@
 2025-10-07 20:36:53 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
 2025-10-07 20:36:54 - APBIA - WARNING - ⚠️  Bucket 'context-files' está vazio ou inacessível
 2025-10-07 20:36:54 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:44:53 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:44:54 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:44:54 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 9 arquivo(s) encontrado(s)
+2025-10-07 20:44:54 - APBIA - INFO - 📂 Arquivos no bucket:
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2011.txt (63969 bytes)
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2012.txt (45648 bytes)
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2013.txt (80154 bytes)
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2014.txt (93989 bytes)
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2015.txt (104010 bytes)
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2016.txt (129151 bytes)
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2017.txt (128892 bytes)
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2018.txt (171176 bytes)
+2025-10-07 20:44:54 - APBIA - INFO -   - bragantec 2019.txt (177728 bytes)
+2025-10-07 20:44:55 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 20:44:57 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 20:44:59 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 20:44:59 - APBIA - INFO - ✅ Bucket 'context-files' acessível - 9 arquivo(s) encontrado(s)
+2025-10-07 20:44:59 - APBIA - INFO - 📂 Arquivos no bucket:
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2011.txt (63969 bytes)
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2012.txt (45648 bytes)
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2013.txt (80154 bytes)
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2014.txt (93989 bytes)
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2015.txt (104010 bytes)
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2016.txt (129151 bytes)
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2017.txt (128892 bytes)
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2018.txt (171176 bytes)
+2025-10-07 20:44:59 - APBIA - INFO -   - bragantec 2019.txt (177728 bytes)
+2025-10-07 20:45:00 - APBIA - INFO - 📥 Estado do monitor carregado

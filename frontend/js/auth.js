@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verifica se já está autenticado
     if (isAuthenticated()) {
         console.log('✅ Usuário já autenticado, redirecionando...');
-        window.location.href = '/public/projetos.html';
+        window.location.href = 'projetos.html';
         return;
     }
     
@@ -103,7 +103,7 @@ async function realizarLogin(email, senha, bp) {
             
             // Redireciona após 1 segundo
             setTimeout(() => {
-                window.location.href = '/public/projetos.html';
+                window.location.href = 'projetos.html';
             }, 1000);
             
         } else {
