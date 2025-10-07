@@ -124,3 +124,20 @@
 2025-10-05 22:32:55 - APBIA - INFO - ✅ Login bem-sucedido: biel508ferreiradasilva1105@gmail.com
 2025-10-05 22:32:57 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'invalid input syntax for type bigint: ""', 'code': '22P02', 'hint': None, 'details': None}
 2025-10-05 22:32:57 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'Could not find the function public.get_orientadores_projeto(p_projeto_id) in the schema cache', 'code': 'PGRST202', 'hint': None, 'details': 'Searched for the function public.get_orientadores_projeto with parameter p_projeto_id or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.'}
+2025-10-07 17:56:29 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 17:56:31 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 17:56:32 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 17:56:32 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-07 17:56:32 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-07 17:56:32 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-07 17:56:34 - APBIA - INFO - ✅ Conexão com Supabase estabelecida
+2025-10-07 17:56:36 - APBIA - INFO - ✅ Modelo Gemini inicializado: gemini-2.5-flash
+2025-10-07 17:56:36 - APBIA - INFO - 📥 Estado do monitor carregado
+2025-10-07 17:56:36 - APBIA - INFO - ✅ Conexão com banco de dados OK
+2025-10-07 17:56:36 - APBIA - INFO - 🚀 Iniciando APBIA v1.0.0
+2025-10-07 17:56:36 - APBIA - INFO - 🌐 Servidor: http://0.0.0.0:5000
+2025-10-07 17:57:07 - APBIA - INFO - ✅ Login bem-sucedido: biel508ferreiradasilva1105@gmail.com
+2025-10-07 17:57:09 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'structure of query does not match function result type', 'code': '42804', 'hint': None, 'details': 'Returned type text does not match expected type character varying in column 2.'}
+2025-10-07 17:57:09 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'structure of query does not match function result type', 'code': '42804', 'hint': None, 'details': 'Returned type text does not match expected type character varying in column 2.'}
+2025-10-07 17:59:08 - APBIA - ERROR - Erro ao buscar participantes: {'message': 'structure of query does not match function result type', 'code': '42804', 'hint': None, 'details': 'Returned type text does not match expected type character varying in column 2.'}
+2025-10-07 17:59:08 - APBIA - ERROR - Erro ao buscar orientadores: {'message': 'structure of query does not match function result type', 'code': '42804', 'hint': None, 'details': 'Returned type text does not match expected type character varying in column 2.'}

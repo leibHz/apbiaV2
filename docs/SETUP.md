@@ -147,7 +147,7 @@ SUPABASE_DB_PASSWORD=sua-senha-do-banco
 ### Passo 4: Inserir Dados Iniciais
 
 1. Nova query no SQL Editor
-2. Cole o conteúdo de `database/seeds.sql`
+2. crie um novo adiministrador com as credenciais padrao obs: gere a senha com um gerador de hash online
 3. Execute
 4. **IMPORTANTE**: Anote as credenciais padrão:
    - Email: `admin@apbia.com`

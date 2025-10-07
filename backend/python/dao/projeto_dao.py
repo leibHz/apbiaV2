@@ -80,18 +80,7 @@ class ProjetoDAO(BaseDAO):
     def _buscar_participantes(self, projeto_id: int) -> List[dict]:
         """Busca participantes do projeto"""
         try:
-            query = """
-                SELECT u.id, u.nome_completo, u.email, u.bp
-                FROM usuarios u
-                INNER JOIN participantes_projetos pp ON u.id = pp.participante_id
-                WHERE pp.projeto_id = {}
-            """.format(projeto_id)
-            
-            result = db.client.table("usuarios").select(
-                "id, nome_completo, email, bp"
-            ).eq("id", "").execute()
-            
-            # Alternativa usando join do Supabase
+            # Usa a função RPC 'get_participantes_projeto' do banco de dados
             result = db.client.rpc('get_participantes_projeto', {'p_projeto_id': projeto_id}).execute()
             return result.data if result.data else []
         except Exception as e:
